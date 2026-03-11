@@ -36,6 +36,15 @@ class Transform
   move(const float deltaX, const float deltaY);
   
   /**
+   * @brief Scales the transform by the specified factors.
+   * 
+   * @param scaleX The scale factor along the x-axis.
+   * @param scaleY The scale factor along the y-axis.
+   */
+  void
+  scale(const float scaleX, const float scaleY);
+
+  /**
    * @brief Sets the scale of the transform.
    * 
    * @param scaleX The scale factor along the x-axis.

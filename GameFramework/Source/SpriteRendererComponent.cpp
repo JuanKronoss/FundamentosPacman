@@ -1,13 +1,28 @@
 #include "SpriteRendererComponent.h"
 #include "Actor.h"
 
-SpriteRendererComponent::SpriteRendererComponent(const sf::Texture& texture, const sf::IntRect rect)
-  : m_sprite(texture/*, rect*/)
-{}
+SpriteRendererComponent::SpriteRendererComponent(const sf::Texture& _texture, bool centerOrigin)
+  : m_texture(_texture), m_sprite(m_texture)
+{
+  if (centerOrigin) {
+    setOriginAtCenter();
+  }
+}
 
-SpriteRendererComponent::SpriteRendererComponent(const sf::Sprite& _sprite)
+SpriteRendererComponent::SpriteRendererComponent(const sf::Sprite& _sprite, bool centerOrigin)
   : m_sprite(_sprite)
-{}
+{
+  if (centerOrigin) {
+    setOriginAtCenter();
+  }
+}
+
+void
+SpriteRendererComponent::setOriginAtCenter()
+{
+  sf::FloatRect bounds = m_sprite.getLocalBounds();
+  m_sprite.setOrigin(sf::Vector2f(bounds.size.x * 0.5f, bounds.size.y * 0.5f));
+}
 
 void
 SpriteRendererComponent::update(const float /*deltaTime*/)

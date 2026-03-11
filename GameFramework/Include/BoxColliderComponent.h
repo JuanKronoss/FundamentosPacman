@@ -69,5 +69,14 @@ class BoxColliderComponent: public Component
   
  private:
 
+  /**
+   * @brief Sets the bounds of the box collider such that its origin is at its center.
+   * This is useful for proper collision detection, as it allows the bounds to be positioned
+   * based on the actor's transform without needing to manually adjust for the origin.
+   */
+  void
+  setBoundsAtCenter();
+
+
   sf::FloatRect m_bounds;
 };

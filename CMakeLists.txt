@@ -13,7 +13,7 @@ FetchContent_Declare(SFML
     GIT_SHALLOW TRUE)
 FetchContent_MakeAvailable(SFML)
 
-set(COMMON_COMPILE_FEAUTRES cxx_std_20)
+set(COMMON_COMPILE_FEATURES cxx_std_20)
 
 add_subdirectory(GameFramework)
 add_subdirectory(Game)

@@ -16,8 +16,8 @@ class SpriteRendererComponent: public Component
 {
  public:
 
-  SpriteRendererComponent(const sf::Texture& texture, const sf::IntRect rect = sf::IntRect());
-  SpriteRendererComponent(const sf::Sprite& _sprite);
+  SpriteRendererComponent(const sf::Texture& _texture, bool centerOrigin = true);
+  SpriteRendererComponent(const sf::Sprite& _sprite, bool centerOrigin = true);
   ~SpriteRendererComponent() = default;
   
   /**
@@ -84,6 +84,13 @@ class SpriteRendererComponent: public Component
 
  private:
 
+  /**
+   * @brief Sets the origin of the sprite to its center for proper rotation and scaling.
+   */
+  void
+  setOriginAtCenter();
+
+  sf::Texture m_texture;
   sf::Sprite m_sprite;
   int32 m_drawOrder = 0;
 };

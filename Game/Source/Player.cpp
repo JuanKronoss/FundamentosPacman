@@ -5,34 +5,57 @@
 
 void Player::update(const float deltaTime)
 {
-  // Handle input and other actor-specific logic here
+  handleInput(deltaTime); // Handle player input to move the character
+
+  Actor::update(deltaTime); // Call the base class update to update components
+}
+
+void
+Player::handleInput(const float deltaTime)
+{
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
   {
-    move(0.0f, -1.0f * m_speed * deltaTime);
+    m_isMoving = true;
+    m_movementDirection = { 0.0f, -1.0f }; // Move up
+    // Rotate the sprite to face up
+    m_transform.setRotation(m_transform.getScale().x < 0.0f ? 90.0f : 270.0f);
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
   {
-    // Move left
-    move(-1.0f * m_speed * deltaTime, 0.0f);
+    m_isMoving = true;
+    m_movementDirection = { -1.0f, 0.0f }; // Move left
     // Flip the sprite horizontally to face left
+    m_transform.setRotation(0.0f);
     sf::Vector2f scale = m_transform.getScale();
-    scale.x = std::abs(scale.x) * -1.0f; // Flip horizontally
-    m_transform.setScale(scale.x, scale.y);
-
+    if (scale.x > 0.0f) {
+      m_transform.scale(-scale.x, scale.y);
+    }
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
   {
-    move(0.0f, 1.0f * m_speed * deltaTime);
+    m_isMoving = true;
+    m_movementDirection = { 0.0f, 1.0f }; // Move down
+    m_transform.setRotation(m_transform.getScale().x < 0.0f ? 270.0f : 90.0f);
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
   {
-    // Move right
-    move(1.0f * m_speed * deltaTime, 0.0f);
+    m_isMoving = true;
+    m_movementDirection = { 1.0f, 0.0f }; // Move right
     // Flip the sprite horizontally to face right
+    m_transform.setRotation(0.0f);
     sf::Vector2f scale = m_transform.getScale();
-    scale.x = std::abs(scale.x) * 1.0f; // Ensure facing right
-    m_transform.setScale(scale.x, scale.y);
+    if (scale.x < 0.0f) {
+      m_transform.scale(scale.x, scale.y);
+    }
   }
+  translate(deltaTime); // Move the player based on the input
+}
 
-  Actor::update(deltaTime); // Call the base class update to update components
+void
+Player::translate(const float deltaTime)
+{
+  if (m_isMoving) {
+    float moveMagnitude = m_speed * deltaTime;
+    move(m_movementDirection.x * moveMagnitude, m_movementDirection.y * moveMagnitude);
+  }
 }

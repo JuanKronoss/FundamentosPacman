@@ -15,6 +15,13 @@ Transform::move(const float deltaX, const float deltaY)
 }
 
 void
+Transform::scale(const float scaleX, const float scaleY)
+{
+  m_scale.x *= scaleX;
+  m_scale.y *= scaleY;
+}
+
+void
 Transform::setScale(const float scaleX, const float scaleY)
 {
   m_scale.x = scaleX;

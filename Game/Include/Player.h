@@ -21,5 +21,19 @@ class Player: public Actor
 
  private:
   
-  float m_speed = 5.0f;
+  /**
+   * @brief Handles player input to move the character based on keyboard input.
+   */
+  void
+  handleInput(const float deltaTime);
+
+  /**
+   * 
+   */
+  void
+  translate(const float deltaTime);
+
+  float m_speed = 2.5f;
+  bool m_isMoving = false;
+  sf::Vector2f m_movementDirection = { 0.0f, 0.0f };
 };
