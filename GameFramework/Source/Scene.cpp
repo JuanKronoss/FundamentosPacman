@@ -25,7 +25,7 @@ void Scene::removeActor(const WPtr<Actor>& actor)
   }
 }
 
-Vector<SPtr<Actor>>&
+Vector<SPtr<Actor>>
 Scene::getActorsInDrawingOrder() const
 {
   Vector<SPtr<Actor>> sortedActors = m_pActors;

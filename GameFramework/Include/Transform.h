@@ -10,7 +10,7 @@
 /**
  * @brief Represents the position, rotation, and scale of an Actor in the game world.
  */
-class DYNAMIC_LIBRARY_API Transform
+class Transform
 {
  public:
   

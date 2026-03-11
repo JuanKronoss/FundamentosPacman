@@ -29,6 +29,16 @@ class SpriteRendererComponent: public Component
   update(const float deltaTime) override;
 
   /**
+   * @brief Gets the sprite associated with this component.
+   * @return A reference to the sprite associated with this component.
+   */
+  inline const sf::Sprite&
+  getSprite() const
+  {
+    return m_sprite;
+  }
+
+  /**
    * @brief Sets the texture of the sprite.
    * @param texture The new texture to use for the sprite.
    */
@@ -47,6 +57,12 @@ class SpriteRendererComponent: public Component
   {
     m_sprite.setTextureRect(rect);
   }
+
+  /**
+   * @brief Flips the sprite horizontally.
+   */
+  void
+  flipX(const bool flipped);
 
   /**
    * @brief Returns the draw order of the owner actor.

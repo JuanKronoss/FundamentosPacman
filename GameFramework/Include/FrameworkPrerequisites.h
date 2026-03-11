@@ -5,13 +5,13 @@
  */
 
 #ifdef __linux__
-#define DYNAMIC_LIBRARY_API __attribute__((visibility("default")))
+  #define DYNAMIC_LIBRARY_API __attribute__((visibility("default")))
 #else // Windows
-#ifdef DYNAMIC_LIBRARY_EXPORTS
-#define DYNAMIC_LIBRARY_API __declspec(dllexport)
-#else
-#define DYNAMIC_LIBRARY_API __declspec(dllimport)
-#endif // DYNAMIC_LIBRARY_EXPORTS
+  #ifdef DYNAMIC_LIBRARY_EXPORTS
+    #define DYNAMIC_LIBRARY_API __declspec(dllexport)
+  #else
+    #define DYNAMIC_LIBRARY_API __declspec(dllimport)
+  #endif // DYNAMIC_LIBRARY_EXPORTS
 #endif // __linux__
 
 /**

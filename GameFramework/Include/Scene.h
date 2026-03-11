@@ -12,7 +12,10 @@
 
 class Actor;
 
-class DYNAMIC_LIBRARY_API Scene
+/**
+ * @brief Represents a scene in the game, which contains actors and manages their lifecycle.
+ */
+class Scene
 {
  public:
 
@@ -38,9 +41,9 @@ class DYNAMIC_LIBRARY_API Scene
   /**
    * @brief Gets the actors in the scene sorted by their draw order.
    * 
-   * @return A reference to a vector of shared pointers to the actors in the scene, sorted by their draw order.
+   * @return A vector of shared pointers to the actors in the scene, sorted by their draw order.
    */
-  Vector<SPtr<Actor>>&
+  Vector<SPtr<Actor>>
   getActorsInDrawingOrder() const;
 
   /**

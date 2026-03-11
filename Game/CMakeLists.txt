@@ -9,6 +9,7 @@ add_executable(PacmanGame ${SOURCE_FILES})
 
 target_include_directories(PacmanGame PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}
+  "${CMAKE_CURRENT_SOURCE_DIR}/Include/"
   "${CMAKE_CURRENT_SOURCE_DIR}/../GameFramework/Include")
 
 target_link_libraries(PacmanGame PRIVATE GameFramework)

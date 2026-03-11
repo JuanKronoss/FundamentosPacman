@@ -16,7 +16,7 @@ class Component;
 /**
  * @brief Base class for all actors in the game.
  */
-class DYNAMIC_LIBRARY_API Actor
+class Actor
 {
  public:
   
@@ -131,7 +131,7 @@ class DYNAMIC_LIBRARY_API Actor
    * @tparam T The type of the component to get.
    * @return A weak pointer to the component, or an empty weak pointer if not found.
    */
-  template <typename T>
+  template <typename T = Component>
   WPtr<T>
   getComponent() const
   {
@@ -145,11 +145,10 @@ class DYNAMIC_LIBRARY_API Actor
     return WPtr<T>();
   }
 
- private:
+ protected:
   
   Transform m_transform;
   Vector<SPtr<Component>> m_components;
   Vector<String> m_tags;
   bool m_isDirty = false;
-  float m_speed = 5.0f;
 };

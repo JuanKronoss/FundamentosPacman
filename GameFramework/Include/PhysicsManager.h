@@ -12,6 +12,9 @@
 
 class Actor;
 
+/**
+ * @brief Manages the physics and collision detection for actors in the scene.
+ */
 class DYNAMIC_LIBRARY_API PhysicsManager
 {
  public:

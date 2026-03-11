@@ -46,26 +46,8 @@ Actor::hasTag(const String& tag) const
 void
 Actor::update(const float deltaTime)
 {
-  // Handle input and other actor-specific logic here
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-  {
-    move(0.0f, -1.0f * m_speed * deltaTime);
-  }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-  {
-    move(-1.0f * m_speed * deltaTime, 0.0f);
-  }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-  {
-    move(0.0f, 1.0f * m_speed * deltaTime);
-  }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-  {
-    move(1.0f * m_speed * deltaTime, 0.0f);
-  }
-
-  // If the actor is dirty, we can skip the update to save performance
-  if (m_isDirty) {
+  // If the actor is not dirty, we can skip the update to save performance
+  if (!m_isDirty) {
     return;
   }
 

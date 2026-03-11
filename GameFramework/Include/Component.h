@@ -12,7 +12,7 @@
 
 class Actor;
 
-class DYNAMIC_LIBRARY_API Component
+class Component
 {
  public:
     
