@@ -1,6 +1,8 @@
 #include <SFML/Graphics.hpp>
 
-int main() {
+#include "FrameworkPrerequisites.h"
+
+int32 main() {
 
   sf::RenderWindow window(sf::VideoMode({ 800, 900 }), "SFML works!");
   window.setPosition({ 560, 50 });
@@ -10,7 +12,7 @@ int main() {
 
   while (window.isOpen()) {
 
-    while (const std::optional event = window.pollEvent()) {
+    while (const Optional event = window.pollEvent()) {
 
       if (event->is<sf::Event::Closed>()) {
         window.close();

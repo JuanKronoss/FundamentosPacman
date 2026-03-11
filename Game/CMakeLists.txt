@@ -1,9 +1,4 @@
-include(FetchContent)
-FetchContent_Declare(SFML
-    GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG 3.0.2
-    GIT_SHALLOW TRUE)
-FetchContent_MakeAvailable(SFML)
+cmake_minimum_required(VERSION 3.5)
 
 file(GLOB_RECURSE
 SOURCE_FILES
@@ -12,8 +7,12 @@ SOURCE_FILES
 
 add_executable(PacmanGame ${SOURCE_FILES})
 
-target_include_directories(PacmanGame PRIVATE ${CMAKE_BINARY_DIR}/_deps/sfml-build/src)
-target_compile_features(PacmanGame PRIVATE cxx_std_20)
-target_link_libraries(PacmanGame PRIVATE SFML::Graphics)
+target_include_directories(PacmanGame PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  "${CMAKE_CURRENT_SOURCE_DIR}/../GameFramework/Include")
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT PacmanGame)
+target_link_libraries(PacmanGame PRIVATE GameFramework)
+
+target_compile_features(PacmanGame PRIVATE ${COMMON_COMPILE_FEAUTRES})
+
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic")
