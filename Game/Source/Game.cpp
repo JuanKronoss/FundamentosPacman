@@ -15,8 +15,8 @@ const String TEXTURES_PATH = ASSETS_PATH + "Textures/";
 
 Game::Game(const String& title, uint16 windowWidth, uint16 windowHeight, int16 posX, int16 posY)
 {
-  m_window.create(sf::VideoMode({ windowWidth, windowHeight }), title);
-  m_window.setPosition({ posX, posY });
+  m_pWindow = make_shared<sf::RenderWindow>(sf::VideoMode({ windowWidth, windowHeight }), title);
+  m_pWindow->setPosition({ posX, posY });
   initialize();
 }
 
@@ -27,11 +27,10 @@ Game::initialize()
   SPtr<Scene> pScene = std::make_shared<Scene>();
   m_pScenes.push_back(pScene);
 
-  String currPath = std::filesystem::current_path().string();
   sf::Texture pacmanTexture(TEXTURES_PATH + "Pacman.png");
-  //sf::Texture pacmanTexture("C:/Users/juanc/Documents/UAD/Especialidad/FundamentosProgra/FundamentosPacman/Assets/Textures/Pacman.png");
-  SPtr<Actor> pPlayer = std::make_shared<Player>();
-  pPlayer->setPosition(m_window.getSize().x * 0.5f, m_window.getSize().y * 0.5f);
+  
+  SPtr<Actor> pPlayer = std::make_shared<Player>(m_pWindow);
+  pPlayer->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.5f);
   pPlayer->addComponent<SpriteRendererComponent>(pacmanTexture);
   pPlayer->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(53.0f, 59.0f));
 
@@ -42,20 +41,20 @@ Game::initialize()
 void
 Game::run()
 {
-  while (m_window.isOpen()) {
+  while (m_pWindow->isOpen()) {
 
-    while (const Optional event = m_window.pollEvent()) {
+    while (const Optional event = m_pWindow->pollEvent()) {
 
       if (event->is<sf::Event::Closed>()) {
-        m_window.close();
+        m_pWindow->close();
       }
     }
 
-    m_window.clear();
+    m_pWindow->clear();
     
     updateScene(*m_pScenes[0]);
     renderScene(*m_pScenes[0]);
-    m_window.display();
+    m_pWindow->display();
   }
 }
 
@@ -72,7 +71,7 @@ void Game::renderScene(const Scene& scene)
   for (const auto& actor : actorsInDrawingOrder) {
     WPtr<SpriteRendererComponent> spriteRenderer = actor->getComponent<SpriteRendererComponent>();
     if (!spriteRenderer.expired()) {
-      m_window.draw(spriteRenderer.lock()->getSprite());
+      m_pWindow->draw(spriteRenderer.lock()->getSprite());
     }
 
     //Debug rendering of box colliders
@@ -85,7 +84,7 @@ void Game::renderScene(const Scene& scene)
         debugShape.setFillColor(sf::Color::Transparent);
         debugShape.setOutlineColor(sf::Color::Red);
         debugShape.setOutlineThickness(1.0f);
-        m_window.draw(debugShape);
+        m_pWindow->draw(debugShape);
       }
     }
 

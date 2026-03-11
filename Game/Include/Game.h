@@ -66,7 +66,7 @@ private:
   void
   renderScene(const Scene& scene);
 
-  sf::RenderWindow m_window;
+  SPtr<sf::RenderWindow> m_pWindow;
 
   Vector<SPtr<Scene>> m_pScenes; // Vector to hold multiple scenes if needed
   PhysicsManager m_physicsManager; // Manages physics and collision detection

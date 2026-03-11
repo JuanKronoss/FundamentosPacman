@@ -3,6 +3,14 @@
 
 #include <SFML/Graphics.hpp>
 
+Player::Player(WPtr<sf::RenderWindow> pWindow)
+{
+  if (pWindow.expired()) {
+    throw std::invalid_argument("Player constructor received an expired window pointer");
+  }
+  m_window = pWindow.lock();
+}
+
 void Player::update(const float deltaTime)
 {
   handleInput(deltaTime); // Handle player input to move the character
@@ -57,5 +65,31 @@ Player::translate(const float deltaTime)
   if (m_isMoving) {
     float moveMagnitude = m_speed * deltaTime;
     move(m_movementDirection.x * moveMagnitude, m_movementDirection.y * moveMagnitude);
+    // Wrap the player around the screen edges
+    sf::Vector2f position = getTransform().getPosition();
+    sf::Vector2u windowSize = m_window->getSize();
+    if (position.x < 0.0f) {
+      setPosition(static_cast<float>(windowSize.x), position.y);
+    }
+    else if (position.x > windowSize.x) {
+      setPosition(0.0f, position.y);
+    }
+    if (position.y < 0.0f) {
+      setPosition(position.x, static_cast<float>(windowSize.y));
+    }
+    else if (position.y > windowSize.y) {
+      setPosition(position.x, 0.0f);
+    }
   }
+}
+
+void
+Player::onCollision(const WPtr<Actor> other, const sf::FloatRect& intersection)
+{
+  if (other.expired()) {
+    return; // Do not handle collision with expired actors
+  }
+  SPtr<Actor> pOther = other.lock();
+  // Handle collision logic here
+
 }

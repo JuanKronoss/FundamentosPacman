@@ -78,8 +78,5 @@ Actor::onCollision(const WPtr<Actor> other, const sf::FloatRect& intersection)
 {
   if (other.expired()) {
     return; // Do not handle collision with expired actors
-  }
-  SPtr<Actor> pOther = other.lock();
-  // Handle collision logic here
-  
+  }  
 }
