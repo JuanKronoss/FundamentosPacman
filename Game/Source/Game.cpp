@@ -58,23 +58,43 @@ Game::run()
   sf::Clock clock;
   while (m_pWindow->isOpen()) {
 
+    sf::Time elapsed = clock.restart();
+    float deltaTime = elapsed.asSeconds();
 
-    while (const Optional event = m_pWindow->pollEvent()) {
-
-      if (event->is<sf::Event::Closed>()) {
-        m_pWindow->close();
-      }
-    }
+    handleEventsAndInput();
 
     m_pWindow->clear();
 
-    updateScene(*m_pScenes[0], m_deltaTime);
-    m_physicsManager.handleCollisions(m_pScenes[0]->getActors());
+    if (!m_isPaused) {
+      updateScene(*m_pScenes[0], deltaTime);
+      m_physicsManager.handleCollisions(m_pScenes[0]->getActors());
+    }
+
     renderScene(*m_pScenes[0]);
     m_pWindow->display();
 
-    sf::Time elapsed = clock.restart();
-    m_deltaTime = elapsed.asSeconds();
+  }
+}
+
+void
+Game::handleEventsAndInput()
+{
+  while (const Optional<sf::Event> event = m_pWindow->pollEvent()) {
+
+    if (event->is<sf::Event::Closed>()) {
+      m_pWindow->close();
+    }
+    if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+     
+      if (keyPressed->code == sf::Keyboard::Key::Escape) {
+        m_pWindow->close(); // Close the window when 'Escape' is pressed
+      }
+
+      if (keyPressed->scancode == sf::Keyboard::Scancode::P) {
+        m_isPaused = !m_isPaused; // Toggle pause state when 'P' is pressed
+      }
+    }
+
   }
 }
 

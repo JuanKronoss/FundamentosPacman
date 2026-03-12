@@ -55,6 +55,12 @@ private:
   initialize();
 
   /**
+   * @brief Handles window events and player input, such as closing the window or pausing the game.
+   */
+  void
+  handleEventsAndInput();
+
+  /**
    * @brief Updates the game state based on the current scene, handling actor updates and game logic.
    */
   void
@@ -82,5 +88,4 @@ private:
   bool m_isDebugMode = true; // Flag to enable/disable debug mode for additional logging or visual aids
   bool m_isPaused = false; // Flag to indicate whether the game is paused
   bool m_isGameOver = false; // Flag to indicate whether the game is over
-  float m_deltaTime = 0.0f; // Time elapsed between frames, used for consistent movement and updates
 };
