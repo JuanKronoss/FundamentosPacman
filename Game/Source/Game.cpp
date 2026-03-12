@@ -55,7 +55,9 @@ Game::initialize()
 void
 Game::run()
 {
+  sf::Clock clock;
   while (m_pWindow->isOpen()) {
+
 
     while (const Optional event = m_pWindow->pollEvent()) {
 
@@ -65,15 +67,18 @@ Game::run()
     }
 
     m_pWindow->clear();
-    
-    updateScene(*m_pScenes[0]);
-    renderScene(*m_pScenes[0]);
+
+    updateScene(*m_pScenes[0], m_deltaTime);
     m_physicsManager.handleCollisions(m_pScenes[0]->getActors());
+    renderScene(*m_pScenes[0]);
     m_pWindow->display();
+
+    sf::Time elapsed = clock.restart();
+    m_deltaTime = elapsed.asSeconds();
   }
 }
 
-void Game::updateScene(const Scene& scene)
+void Game::updateScene(const Scene& scene, const float deltaTime)
 {
   for (const auto& actor : scene.getActors()) {
     actor->update(0.016f); // Assuming a fixed delta time of 16ms for simplicity

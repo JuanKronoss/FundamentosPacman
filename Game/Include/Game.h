@@ -58,7 +58,7 @@ private:
    * @brief Updates the game state based on the current scene, handling actor updates and game logic.
    */
   void
-  updateScene(const Scene& scene);
+  updateScene(const Scene& scene, const float deltaTime);
 
   /**
    * @brief Renders the current scene to the window, drawing all actors and visual elements.
@@ -80,5 +80,7 @@ private:
   SPtr<Player> m_pPlayer;
 
   bool m_isDebugMode = true; // Flag to enable/disable debug mode for additional logging or visual aids
-
+  bool m_isPaused = false; // Flag to indicate whether the game is paused
+  bool m_isGameOver = false; // Flag to indicate whether the game is over
+  float m_deltaTime = 0.0f; // Time elapsed between frames, used for consistent movement and updates
 };

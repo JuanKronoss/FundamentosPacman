@@ -21,14 +21,16 @@ void Player::update(const float deltaTime)
 void
 Player::handleInput(const float deltaTime)
 {
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) ||
+      sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
   {
     m_isMoving = true;
     m_movementDirection = { 0.0f, -1.0f }; // Move up
     // Rotate the sprite to face up
     m_transform.setRotation(m_transform.getScale().x < 0.0f ? 90.0f : 270.0f);
   }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) ||
+      sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
   {
     m_isMoving = true;
     m_movementDirection = { -1.0f, 0.0f }; // Move left
@@ -39,13 +41,15 @@ Player::handleInput(const float deltaTime)
       m_transform.scale(-scale.x, scale.y);
     }
   }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) ||
+      sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
   {
     m_isMoving = true;
     m_movementDirection = { 0.0f, 1.0f }; // Move down
     m_transform.setRotation(m_transform.getScale().x < 0.0f ? 270.0f : 90.0f);
   }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) ||
+      sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
   {
     m_isMoving = true;
     m_movementDirection = { 1.0f, 0.0f }; // Move right
