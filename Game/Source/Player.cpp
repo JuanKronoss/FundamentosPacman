@@ -92,6 +92,10 @@ Player::onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersect
   SPtr<Actor> pOther = other.lock();
   // Handle collision logic here
 
+  if (pOther->hasTag("Wall")) {
+    m_isMoving = false; // Stop the player from moving when colliding with a wall
+  }
+
   if (pOther->hasTag("Enemy")) {
     // If the player collides with an enemy, trigger the onDeath event
     onDeath.invoke();
@@ -106,6 +110,29 @@ Player::onCollisionStay(const WPtr<Actor> other, const sf::FloatRect& intersecti
   }
   SPtr<Actor> pOther = other.lock();
   // Handle ongoing collision logic here if needed
+  if (pOther->hasTag("Wall")) {
+    m_isMoving = false; // Stop the player from moving when colliding with a wall
+    // Prevent the player from moving further into the wall based on the intersection rectangle
+    if (intersection.size.x < intersection.size.y) {
+      // Collision is more horizontal, adjust the player's position on the x-axis
+      if (getTransform().getPosition().x < pOther->getTransform().getPosition().x) {
+        setPosition(getTransform().getPosition().x - intersection.size.x, getTransform().getPosition().y);
+      }
+      else {
+        setPosition(getTransform().getPosition().x + intersection.size.x, getTransform().getPosition().y);
+      }
+    }
+    else {
+      // Collision is more vertical, adjust the player's position on the y-axis
+      if (getTransform().getPosition().y < pOther->getTransform().getPosition().y) {
+        setPosition(getTransform().getPosition().x, getTransform().getPosition().y - intersection.size.y);
+      }
+      else {
+        setPosition(getTransform().getPosition().x, getTransform().getPosition().y + intersection.size.y);
+      }
+    }
+
+  }
 }
 
 void
