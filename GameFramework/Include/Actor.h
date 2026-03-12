@@ -94,12 +94,29 @@ class Actor
 
   /**
    * @brief Called when the actor collides with another actor.
+   *
+   * @param other The other actor involved in the collision.
+   * @param intersection The intersection rectangle of the collision.
+   */
+  virtual void
+  onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersection);
+
+  /**
+   * @brief Called when the actor continues to collide with another actor in subsequent frames.
    * 
    * @param other The other actor involved in the collision.
    * @param intersection The intersection rectangle of the collision.
    */
   virtual void
-  onCollision(const WPtr<Actor> other, const sf::FloatRect& intersection);
+  onCollisionStay(const WPtr<Actor> other, const sf::FloatRect& intersection);
+
+  /**
+   * @brief Called when the actor stops colliding with another actor.
+   * 
+   * @param other The other actor involved in the collision.
+   */
+  virtual void
+  onCollisionExit(const WPtr<Actor> other);
 
   inline bool
   isDirty() const

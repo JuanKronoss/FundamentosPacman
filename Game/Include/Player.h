@@ -5,6 +5,7 @@
  */
 
 #include "Actor.h"
+#include "Event.h"
 
 /**
  * @brief Represents the player character in the game, which is a type of actor.
@@ -18,6 +19,8 @@ class Player: public Actor
 
   void
   update(const float deltaTime) override;
+
+  Event<> onDeath;
 
  private:
   
@@ -41,7 +44,24 @@ class Player: public Actor
    * @param intersection The intersection rectangle of the collision.
    */
   void
-  onCollision(const WPtr<Actor> other, const sf::FloatRect& intersection) override;
+  onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersection) override;
+
+  /**
+   * @brief Called when the actor continues to collide with another actor in subsequent frames.
+   * 
+   * @param other The other actor involved in the collision.
+   * @param intersection The intersection rectangle of the collision.
+   */
+  void
+  onCollisionStay(const WPtr<Actor> other, const sf::FloatRect& intersection) override;
+
+  /**
+   * @brief Called when the actor stops colliding with another actor.
+   * 
+   * @param other The other actor involved in the collision.
+   */
+  void
+  onCollisionExit(const WPtr<Actor> other) override;
 
   SPtr<sf::RenderWindow> m_window; // Reference to the game window for wrapping the player around the screen
   float m_speed = 2.5f;

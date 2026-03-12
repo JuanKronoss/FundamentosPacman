@@ -66,6 +66,12 @@ private:
   void
   renderScene(const Scene& scene);
 
+  /**
+   * @brief Handles the game over state, which may involve displaying a game over screen, resetting the game, or exiting.
+   */
+  void
+  onGameOver();
+
   SPtr<sf::RenderWindow> m_pWindow;
 
   Vector<SPtr<Scene>> m_pScenes; // Vector to hold multiple scenes if needed

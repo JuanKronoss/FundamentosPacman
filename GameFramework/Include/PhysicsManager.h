@@ -12,10 +12,21 @@
 
 class Actor;
 
+struct CollisionPair
+{
+  SPtr<Actor> a;
+  SPtr<Actor> b;
+
+  bool operator<(const CollisionPair& other) const
+  {
+    return tie(a, b) < tie(other.a, other.b);
+  }
+};
+
 /**
  * @brief Manages the physics and collision detection for actors in the scene.
  */
-class DYNAMIC_LIBRARY_API PhysicsManager
+class PhysicsManager
 {
  public:
   
@@ -27,5 +38,9 @@ class DYNAMIC_LIBRARY_API PhysicsManager
    */
   void
   handleCollisions(const Vector<SPtr<Actor>>& actors);
+
+ private:
+
+  Set<CollisionPair> m_prevCollisions;
 
 };

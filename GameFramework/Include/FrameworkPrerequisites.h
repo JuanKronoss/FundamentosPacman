@@ -22,10 +22,13 @@
 #include <cstdint>
 #include <cstddef>
 #include <vector>
+#include <set>
 #include <optional>
 #include <string>
 #include <fstream>
 #include <algorithm>
+#include <functional>
+#include <iostream>
 
 /**
  * Using declarations
@@ -40,10 +43,13 @@ using int16 = std::int16_t;
 using int32 = std::int32_t;
 using int64 = std::int64_t;
 
+using std::cout;
 using std::make_shared;
 using std::dynamic_pointer_cast;
 using std::forward;
 using std::find;
+using std::tie;
+using std::function;
 
 template <typename T>
 using SPtr = std::shared_ptr<T>;
@@ -53,6 +59,9 @@ using WPtr = std::weak_ptr<T>;
 
 template<class T>
 using Vector = std::vector<T>;
+
+template<class T>
+using Set = std::set<T>;
 
 template <typename T>
 using Optional = std::optional<T>;

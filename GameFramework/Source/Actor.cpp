@@ -74,9 +74,25 @@ Actor::move(const float deltaX, const float deltaY)
 }
 
 void
-Actor::onCollision(const WPtr<Actor> other, const sf::FloatRect& intersection)
+Actor::onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersection)
 {
   if (other.expired()) {
     return; // Do not handle collision with expired actors
   }  
+}
+
+void
+Actor::onCollisionStay(const WPtr<Actor> other, const sf::FloatRect& intersection)
+{
+  if (other.expired()) {
+    return; // Do not handle collision with expired actors
+  }
+}
+
+void
+Actor::onCollisionExit(const WPtr<Actor> other)
+{
+  if (other.expired()) {
+    return; // Do not handle collision with expired actors
+  }
 }

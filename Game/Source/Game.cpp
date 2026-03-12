@@ -28,14 +28,28 @@ Game::initialize()
   m_pScenes.push_back(pScene);
 
   sf::Texture pacmanTexture(TEXTURES_PATH + "Pacman.png");
+  sf::Texture redGhostTexture(TEXTURES_PATH + "RedGhost.png");
   
-  SPtr<Actor> pPlayer = std::make_shared<Player>(m_pWindow);
+  SPtr<Player> pPlayer = std::make_shared<Player>(m_pWindow);
   pPlayer->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.5f);
   pPlayer->addComponent<SpriteRendererComponent>(pacmanTexture);
   pPlayer->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(53.0f, 59.0f));
 
   pScene->addActor(pPlayer);
 
+  pPlayer->onDeath.subscribe(
+    [&]()
+    {
+      onGameOver();
+    });
+
+  SPtr<Actor> pGhost = std::make_shared<Actor>();
+  pGhost->addTag("Enemy");
+  pGhost->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.25f);
+  pGhost->addComponent<SpriteRendererComponent>(redGhostTexture);
+  pGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(53.0f, 59.0f));
+
+  pScene->addActor(pGhost);
 }
 
 void
@@ -54,6 +68,7 @@ Game::run()
     
     updateScene(*m_pScenes[0]);
     renderScene(*m_pScenes[0]);
+    m_physicsManager.handleCollisions(m_pScenes[0]->getActors());
     m_pWindow->display();
   }
 }
@@ -90,4 +105,10 @@ void Game::renderScene(const Scene& scene)
 
   }
 
+}
+
+void Game::onGameOver()
+{
+  // Handle game over state, e.g., display game over screen, reset game, etc.
+  cout << "Game Over!\n\a";
 }

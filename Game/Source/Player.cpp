@@ -84,7 +84,7 @@ Player::translate(const float deltaTime)
 }
 
 void
-Player::onCollision(const WPtr<Actor> other, const sf::FloatRect& intersection)
+Player::onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersection)
 {
   if (other.expired()) {
     return; // Do not handle collision with expired actors
@@ -92,4 +92,28 @@ Player::onCollision(const WPtr<Actor> other, const sf::FloatRect& intersection)
   SPtr<Actor> pOther = other.lock();
   // Handle collision logic here
 
+  if (pOther->hasTag("Enemy")) {
+    // If the player collides with an enemy, trigger the onDeath event
+    onDeath.invoke();
+  }
+}
+
+void
+Player::onCollisionStay(const WPtr<Actor> other, const sf::FloatRect& intersection)
+{
+  if (other.expired()) {
+    return; // Do not handle collision with expired actors
+  }
+  SPtr<Actor> pOther = other.lock();
+  // Handle ongoing collision logic here if needed
+}
+
+void
+Player::onCollisionExit(const WPtr<Actor> other)
+{
+  if (other.expired()) {
+    return; // Do not handle collision with expired actors
+  }
+  SPtr<Actor> pOther = other.lock();
+  // Handle logic for when the collision ends if needed
 }
