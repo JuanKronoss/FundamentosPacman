@@ -21,6 +21,9 @@ class Player: public Actor
   update(const float deltaTime) override;
 
   Event<> onDeath;
+  Event<uint32> onScoreChange;
+  Event<> onInvincibilityActivate;
+  Event<> onInvincibilityDeactivate;
 
  private:
   
@@ -65,7 +68,10 @@ class Player: public Actor
 
   SPtr<sf::RenderWindow> m_window; // Reference to the game window for wrapping the player around the screen
   float m_speed = 200.0f;
+  float m_invincibilityDuration = 5.0f; // Duration of invincibility in seconds
+  float m_invincibilityTimer = 0.0f; // Timer to track the remaining invincibility time
   bool m_isMoving = false;
+  bool m_isInvincible = false;
   sf::Vector2f m_movementDirection = { 0.0f, 0.0f };
 
 };

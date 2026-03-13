@@ -69,3 +69,14 @@ Scene::getActorsInDrawingOrder(const bool onlyVisible) const
        });
   return sortedActors;
 }
+
+void
+Scene::destroyMarkedActors()
+{
+  m_pActors.erase(
+    remove_if(m_pActors.begin(), m_pActors.end(),
+              [](const SPtr<Actor>& actor) {
+                return actor->toBeDestroyed();
+              }),
+    m_pActors.end());
+}

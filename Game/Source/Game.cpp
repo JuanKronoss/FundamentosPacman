@@ -10,6 +10,7 @@
 #include "SpriteRendererComponent.h"
 #include "BoxColliderComponent.h"
 #include "Player.h"
+#include "ScoreBall.h"
 
 constexpr float FPS = 60.0f;
 constexpr float FRAME_RATE = 1.0f / FPS;
@@ -33,6 +34,7 @@ Game::initialize()
   sf::Texture redGhostTexture(TEXTURES_PATH + "RedGhost.png");
   
   SPtr<Player> pPlayer = std::make_shared<Player>(m_pWindow);
+  pPlayer->addTag("Player");
   pPlayer->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.5f);
   pPlayer->addComponent<SpriteRendererComponent>(pacmanTexture);
   pPlayer->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(53.0f, 59.0f));
@@ -53,7 +55,27 @@ Game::initialize()
 
   m_pActiveScene->addActor(pGhost);
 
+  sf::Texture scoreBallTexture(TEXTURES_PATH + "ScoreBall.png");
+  SPtr<ScoreBall> pScoreBall = std::make_shared<ScoreBall>();
+  pScoreBall->addTag("Score");
+  pScoreBall->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.75f);
+  pScoreBall->addComponent<SpriteRendererComponent>(scoreBallTexture);
+  pScoreBall->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
+  pScoreBall->getComponent<SpriteRendererComponent>().lock()->setDrawOrder(-1);
+
+  m_pActiveScene->addActor(pScoreBall);
+
   m_pActiveScene->setAllActorsVisibility(false); // Start with all actors invisible until the main menu is dismissed
+
+  m_scoreManager.loadHighScoreFile();
+  m_hud.updateScore(m_scoreManager.getCurrentScore(), m_scoreManager.getHighScore()); // Initialize the HUD with the current score and high score
+
+  pPlayer->onScoreChange.subscribe(
+    [&](uint32 scoreValue)
+    {
+      m_scoreManager.addPoints(scoreValue); // Update the score in the Score Manager when the player scores points
+      m_hud.updateScore(m_scoreManager.getCurrentScore(), m_scoreManager.getHighScore()); // Notify the HUD to update the displayed score and high score
+    });
 }
 
 void
@@ -76,6 +98,7 @@ Game::run()
 
     renderScene(*m_pScenes[0]);
     renderUI();
+    m_pActiveScene->destroyMarkedActors(); // Destroy any actors that were marked for destruction during the update or collision handling
     m_pWindow->display();
 
   }
@@ -167,4 +190,7 @@ void Game::onGameOver()
   // Handle game over state, e.g., display game over screen, reset game, etc.
   cout << "Game Over!\n\a";
   m_isGameOver = true;
+
+  m_scoreManager.saveHighScoreFile(); // Save the high score to file when the game is over
+  m_gameOverUI.displayScore(m_scoreManager.getCurrentScore(), m_scoreManager.hasGotHighScore());
 }

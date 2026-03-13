@@ -12,8 +12,7 @@ PauseUI::PauseUI()
 void
 PauseUI::populate()
 {
-  String promptString = "PAUSED";
-  sf::Text promptText(m_arcadeFont, promptString, 36);
-  promptText.setPosition(sf::Vector2f(285.0f, 400.0f));
-  addDrawable(make_shared<sf::Text>(promptText));
+  auto promptText = make_shared<sf::Text>(m_arcadeFont, "PAUSED", 36);
+  centerText(promptText, 400.0f, 400.0f);
+  addDrawable(promptText);
 }

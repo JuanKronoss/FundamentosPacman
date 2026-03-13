@@ -72,6 +72,13 @@ class Scene
     return m_pActors;
   }
 
+  /**
+   * @brief Destroys all actors in the scene that are marked for destruction.
+   * This should be called at the end of each frame to safely remove actors that have been marked for destruction during updates or collisions.
+   */
+  void
+  destroyMarkedActors();
+
  private:
 
   Vector<SPtr<Actor>> m_pActors;

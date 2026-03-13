@@ -24,12 +24,14 @@ HUD::populate()
   highScoreText.setPosition(sf::Vector2f(400.0f, 20.0f));
   addDrawable(make_shared<sf::Text>(highScoreText));
 
-  // TODO: Implement a way to update the score and high score text elements when the player's score changes during gameplay
-
-  // TODO: Consider creating a ScoreManager class that keeps track of the current score and high score,
-  // and provides methods to update the score and notify the HUD to update the displayed text accordingly
-
   m_highScoreNumText = make_shared<sf::Text>(m_arcadeFont, "0", 24);
   m_highScoreNumText->setPosition(sf::Vector2f(400.0f, 60.0f));
   addDrawable(m_highScoreNumText);
+}
+
+void
+HUD::updateScore(const uint32 currentScore, const uint32 highScore)
+{
+  m_scoreNumText->setString(to_string(currentScore));
+  m_highScoreNumText->setString(to_string(highScore));
 }

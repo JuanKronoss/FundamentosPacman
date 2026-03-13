@@ -23,6 +23,14 @@ class HUD: public UI
   void
   populate() override;
 
+  /**
+   * @brief Updates the displayed score and high score text elements with the current values.
+   * @param currentScore The current score to display.
+   * @param highScore The high score to display.
+   */
+  void
+  updateScore(const uint32 currentScore, const uint32 highScore);
+
  private:
 
   SPtr<sf::Text> m_scoreNumText;

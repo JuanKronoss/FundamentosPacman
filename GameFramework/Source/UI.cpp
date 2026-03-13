@@ -19,6 +19,20 @@ UI::addDrawable(const SPtr<sf::Drawable>& drawable)
 }
 
 void
+UI::centerText(WPtr<sf::Text> wpText, const float posX, const float posY)
+{
+  if (wpText.expired()) {
+    return; // Do not attempt to center an expired text
+  }
+  SPtr<sf::Text> pText = wpText.lock();
+  sf::FloatRect textBounds = pText->getLocalBounds();
+  float originX = std::floor(textBounds.size.x * 0.5f);
+  float originY = std::floor(textBounds.size.y * 0.5f);
+  pText->setOrigin(sf::Vector2f(originX, originY));
+  pText->setPosition(sf::Vector2f(posX, posY));
+}
+
+void
 UI::draw(sf::RenderTarget& target) const
 {
   for (const auto& drawable : m_drawables) {

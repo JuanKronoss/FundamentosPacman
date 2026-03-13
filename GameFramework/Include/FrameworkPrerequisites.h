@@ -46,9 +46,11 @@ using int64 = std::int64_t;
 using std::cout;
 using std::make_shared;
 using std::dynamic_pointer_cast;
+using std::remove_if;
 using std::forward;
 using std::find;
 using std::tie;
+using std::to_string;
 using std::function;
 
 template <typename T>
@@ -68,6 +70,8 @@ using Optional = std::optional<T>;
 
 using String = std::string;
 
+using IFStream = std::ifstream;
+using OFStream = std::ofstream;
 using IOFStream = std::fstream;
 
 template <typename Base, typename Derived>
@@ -76,3 +80,4 @@ using IsBaseOf = std::is_base_of<Base, Derived>;
 const String ASSETS_PATH = "Assets/";
 const String TEXTURES_PATH = ASSETS_PATH + "Textures/";
 const String FONTS_PATH = ASSETS_PATH + "Fonts/";
+const String SCORE_FILE_PATH = ASSETS_PATH + "Scores/";

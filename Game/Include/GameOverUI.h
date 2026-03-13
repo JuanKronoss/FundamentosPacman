@@ -23,8 +23,14 @@ class GameOverUI: public UI
   void
   populate() override;
 
+  /**
+   * @brief Displays the score on the game over screen.
+   */
+  void
+  displayScore(const uint32 score, const bool isHighScore);
+
  private:
 
-  sf::Texture m_gameOverTexture;
-
+  SPtr<sf::Text> m_highScoreText;
+  SPtr<sf::Text> m_highScoreNumText;
 };

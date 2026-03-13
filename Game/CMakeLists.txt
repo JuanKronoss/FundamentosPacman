@@ -18,8 +18,14 @@ target_compile_features(PacmanGame PRIVATE ${COMMON_COMPILE_FEATURES})
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic")
 
-add_custom_command(TARGET PacmanGame POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    "${CMAKE_SOURCE_DIR}/Assets"
-    "$<TARGET_FILE_DIR:PacmanGame>/Assets"
-)
+#add_custom_command(TARGET PacmanGame POST_BUILD
+#  COMMAND ${CMAKE_COMMAND} -E copy_directory
+#  "${CMAKE_SOURCE_DIR}/Assets"
+#  "$<TARGET_FILE_DIR:PacmanGame>/Assets")
+
+add_custom_target(copy_assets ALL
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  "${CMAKE_SOURCE_DIR}/Assets"
+  "$<TARGET_FILE_DIR:PacmanGame>/Assets")
+
+add_dependencies(copy_assets PacmanGame)

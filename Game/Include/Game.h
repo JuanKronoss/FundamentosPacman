@@ -11,6 +11,7 @@
 #include "HUD.h"
 #include "PauseUI.h"
 #include "GameOverUI.h"
+#include "ScoreManager.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -93,6 +94,7 @@ private:
   Vector<SPtr<Scene>> m_pScenes; // Vector to hold multiple scenes if needed
   SPtr<Scene> m_pActiveScene; // Pointer to the current active scene
   PhysicsManager m_physicsManager; // Manages physics and collision detection
+  ScoreManager m_scoreManager; // Manages the player's score and high score
 
   SPtr<Player> m_pPlayer;
 

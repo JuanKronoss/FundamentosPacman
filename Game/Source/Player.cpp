@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "SpriteRendererComponent.h"
+#include "ScoreBall.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -16,6 +17,16 @@ void Player::update(const float deltaTime)
   handleInput(deltaTime); // Handle player input to move the character
 
   Actor::update(deltaTime); // Call the base class update to update components
+
+  // Handle invincibility timer
+  if (m_isInvincible) {
+    m_invincibilityTimer += deltaTime;
+    if (m_invincibilityTimer >= m_invincibilityDuration) {
+      m_isInvincible = false; // End invincibility when the timer runs out
+      m_invincibilityTimer = 0.0f; // Reset the timer
+      onInvincibilityDeactivate.invoke(); // Trigger the invincibility deactivate event
+    }
+  }
 }
 
 void
@@ -100,7 +111,24 @@ Player::onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersect
     m_isMoving = false; // Stop the player from moving when colliding with a wall
   }
 
+  if (pOther->hasTag("Score")) {
+    auto scoreBall = std::dynamic_pointer_cast<ScoreBall>(pOther);
+    if (scoreBall) {
+      onScoreChange.invoke(scoreBall->getScoreValue()); // Trigger the score change event with the score value from the ScoreBall
+    }
+  }
+
+  if (pOther->hasTag("PowerUp")) {
+    m_isInvincible = true; // Make the player invincible when colliding with a power-up
+    m_invincibilityTimer = 0.0f; // Reset the invincibility timer
+    onInvincibilityActivate.invoke(); // Trigger the invincibility activate event
+  }
+
   if (pOther->hasTag("Enemy")) {
+
+    if (m_isInvincible) {
+      return;
+    }
     // If the player collides with an enemy, trigger the onDeath event
     onDeath.invoke();
   }

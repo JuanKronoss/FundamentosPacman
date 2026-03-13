@@ -33,6 +33,15 @@ class UI
   addDrawable(const SPtr<sf::Drawable>& drawable);
 
   /**
+   * @brief Centers the specified text element at the given position.
+   * @param wpText A weak pointer to the text element to center.
+   * @param posX The x-coordinate of the position to center the text at.
+   * @param posY The y-coordinate of the position to center the text at.
+   */
+  void
+  centerText(WPtr<sf::Text> wpText, const float posX, const float posY); 
+
+  /**
    * @brief Draws all the drawable elements in the UI to the specified render target.
    * @param target The render target to draw the UI elements on.
    */

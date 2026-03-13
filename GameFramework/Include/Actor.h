@@ -152,6 +152,30 @@ class Actor
   }
 
   /**
+   * @brief Marks the actor to be destroyed at the end of the current frame.
+   * This allows for safe destruction of actors without immediately removing them from memory,
+   * which can prevent issues with dangling pointers during updates or collisions.
+   */
+  inline void
+  markForDestruction()
+  {
+    m_toBeDestroyed = true;
+  }
+
+  /**
+   * @brief Checks if the actor is marked to be destroyed at the end of the current frame.
+   * 
+   * @return true if the actor is marked for destruction, false otherwise.
+   */
+  inline bool
+  toBeDestroyed() const
+  {
+    return m_toBeDestroyed;
+  }
+
+
+
+  /**
    * @brief Adds a component to the actor.
    * 
    * @tparam T The type of the component to add.
@@ -196,4 +220,5 @@ class Actor
   Vector<String> m_tags;
   bool m_isVisible = true;
   bool m_isDirty = false;
+  bool m_toBeDestroyed = false; // Flag to indicate whether the actor should be destroyed at the end of the current frame
 };
