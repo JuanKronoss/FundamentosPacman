@@ -59,12 +59,6 @@ class SpriteRendererComponent: public Component
   }
 
   /**
-   * @brief Flips the sprite horizontally.
-   */
-  void
-  flipX(const bool flipped);
-
-  /**
    * @brief Returns the draw order of the owner actor.
    */
   inline int32

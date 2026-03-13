@@ -35,11 +35,3 @@ SpriteRendererComponent::update(const float /*deltaTime*/)
     m_sprite.setScale(transform.getScale());
   }
 }
-
-void
-SpriteRendererComponent::flipX(const bool flipped)
-{
-  sf::Vector2f scale = m_sprite.getScale();
-  scale.x = std::abs(scale.x) * (flipped ? -1.0f : 1.0f);
-  m_sprite.scale(scale);
-}

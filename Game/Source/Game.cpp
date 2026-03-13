@@ -4,18 +4,20 @@
 
 #include "Game.h"
 
+#include "FrameworkPrerequisites.h"
 #include "Scene.h"
 #include "Actor.h"
 #include "SpriteRendererComponent.h"
 #include "BoxColliderComponent.h"
 #include "Player.h"
 
-const String ASSETS_PATH = "Assets/";
-const String TEXTURES_PATH = ASSETS_PATH + "Textures/";
+constexpr float FPS = 60.0f;
+constexpr float FRAME_RATE = 1.0f / FPS;
 
 Game::Game(const String& title, uint16 windowWidth, uint16 windowHeight, int16 posX, int16 posY)
 {
-  m_pWindow = make_shared<sf::RenderWindow>(sf::VideoMode({ windowWidth, windowHeight }), title);
+  uint32 style = sf::Style::Titlebar | sf::Style::Close; // Create a window with a title bar and close button, but no resize option
+  m_pWindow = make_shared<sf::RenderWindow>(sf::VideoMode({ windowWidth, windowHeight }), title, style);
   m_pWindow->setPosition({ posX, posY });
   initialize();
 }
@@ -24,8 +26,8 @@ void
 Game::initialize()
 {
   // Initialize game resources, load assets, set up initial game state, etc.
-  SPtr<Scene> pScene = std::make_shared<Scene>();
-  m_pScenes.push_back(pScene);
+  m_pActiveScene = std::make_shared<Scene>();
+  m_pScenes.push_back(m_pActiveScene);
 
   sf::Texture pacmanTexture(TEXTURES_PATH + "Pacman.png");
   sf::Texture redGhostTexture(TEXTURES_PATH + "RedGhost.png");
@@ -35,7 +37,7 @@ Game::initialize()
   pPlayer->addComponent<SpriteRendererComponent>(pacmanTexture);
   pPlayer->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(53.0f, 59.0f));
 
-  pScene->addActor(pPlayer);
+  m_pActiveScene->addActor(pPlayer);
 
   pPlayer->onDeath.subscribe(
     [&]()
@@ -49,7 +51,9 @@ Game::initialize()
   pGhost->addComponent<SpriteRendererComponent>(redGhostTexture);
   pGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(53.0f, 59.0f));
 
-  pScene->addActor(pGhost);
+  m_pActiveScene->addActor(pGhost);
+
+  m_pActiveScene->setAllActorsVisibility(false); // Start with all actors invisible until the main menu is dismissed
 }
 
 void
@@ -71,6 +75,7 @@ Game::run()
     }
 
     renderScene(*m_pScenes[0]);
+    renderUI();
     m_pWindow->display();
 
   }
@@ -90,6 +95,12 @@ Game::handleEventsAndInput()
         m_pWindow->close(); // Close the window when 'Escape' is pressed
       }
 
+      if (keyPressed->code == sf::Keyboard::Key::Enter) {
+        m_mainMenuActive = m_mainMenuActive = false;
+        m_isPaused = false; // Start the game when 'Enter' is pressed
+        m_pActiveScene->setAllActorsVisibility(true); // Make all actors visible when the main menu is dismissed
+      }
+
       if (keyPressed->scancode == sf::Keyboard::Scancode::P) {
         m_isPaused = !m_isPaused; // Toggle pause state when 'P' is pressed
       }
@@ -101,7 +112,7 @@ Game::handleEventsAndInput()
 void Game::updateScene(const Scene& scene, const float deltaTime)
 {
   for (const auto& actor : scene.getActors()) {
-    actor->update(0.016f); // Assuming a fixed delta time of 16ms for simplicity
+    actor->update(deltaTime);
   }
 }
 
@@ -132,8 +143,28 @@ void Game::renderScene(const Scene& scene)
 
 }
 
+void
+Game::renderUI()
+{
+  if (m_mainMenuActive) {
+    m_mainMenuUI.draw(*m_pWindow);
+  }
+  else if (m_isGameOver) {
+    m_gameOverUI.draw(*m_pWindow);
+  }
+  else {
+    if (!m_isPaused) {
+      m_hud.draw(*m_pWindow);
+    }
+    else {
+      m_pauseUI.draw(*m_pWindow);
+    }
+  }
+}
+
 void Game::onGameOver()
 {
   // Handle game over state, e.g., display game over screen, reset game, etc.
   cout << "Game Over!\n\a";
+  m_isGameOver = true;
 }

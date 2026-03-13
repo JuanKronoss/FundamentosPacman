@@ -25,10 +25,39 @@ void Scene::removeActor(const WPtr<Actor>& actor)
   }
 }
 
-Vector<SPtr<Actor>>
-Scene::getActorsInDrawingOrder() const
+void
+Scene::setAllActorsVisibility(const bool isVisible)
 {
-  Vector<SPtr<Actor>> sortedActors = m_pActors;
+  for (const auto& actor : m_pActors) {
+    actor->setVisible(isVisible);
+  }
+}
+
+Vector<SPtr<Actor>>
+Scene::getVisibleActors() const
+{
+  Vector<SPtr<Actor>> visibleActors;
+  for (const auto& actor : m_pActors) {
+    if (actor->isVisible()) {
+      visibleActors.push_back(actor);
+    }
+  }
+  return visibleActors;
+}
+
+Vector<SPtr<Actor>>
+Scene::getActorsInDrawingOrder(const bool onlyVisible) const
+{
+  Vector<SPtr<Actor>> sortedActors;
+  sortedActors.reserve(m_pActors.size());
+
+  // Filter while copying if only visible actors should be included
+  for (const auto& actor : m_pActors) {
+    if (!onlyVisible || actor->isVisible()) {
+      sortedActors.push_back(actor);
+    }
+  }
+
   // Sort the actors by their draw order before returning them
   sort(sortedActors.begin(), sortedActors.end(),
        [](const SPtr<Actor>& a, const SPtr<Actor>& b) {

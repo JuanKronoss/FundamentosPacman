@@ -72,3 +72,7 @@ using IOFStream = std::fstream;
 
 template <typename Base, typename Derived>
 using IsBaseOf = std::is_base_of<Base, Derived>;
+
+const String ASSETS_PATH = "Assets/";
+const String TEXTURES_PATH = ASSETS_PATH + "Textures/";
+const String FONTS_PATH = ASSETS_PATH + "Fonts/";

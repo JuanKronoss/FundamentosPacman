@@ -1,0 +1,29 @@
+#pragma once
+
+/**
+ * Includes
+ */
+
+#include "UI.h"
+
+/**
+ * @brief Represents the pause user interface (UI) of the game,
+ * which is displayed when the player pauses the game and allows the player to resume.
+ */
+class PauseUI: public UI
+{
+ public:
+ 
+  PauseUI();
+  ~PauseUI() = default;
+  
+  /**
+   * @brief Populates the UI with drawable elements.
+   */
+  void
+  populate() override;
+ 
+ private:
+ 
+   sf::Texture m_pauseTexture;
+};

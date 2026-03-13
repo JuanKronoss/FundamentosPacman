@@ -118,6 +118,33 @@ class Actor
   virtual void
   onCollisionExit(const WPtr<Actor> other);
 
+  /**
+   * @brief Checks if the actor is currently visible.
+   * 
+   * @return true if the actor is visible, false otherwise.
+   */
+  inline bool
+  isVisible() const
+  {
+    return m_isVisible;
+  }
+
+  /**
+   * @brief Sets the visibility of the actor.
+   * 
+   * @param isVisible true to make the actor visible, false to make it invisible.
+   */ 
+  inline void
+  setVisible(const bool isVisible)
+  {
+    m_isVisible = isVisible;
+  }
+  
+  /**
+   * @brief Checks if the actor is dirty, meaning it has been modified and may need to be updated or redrawn.
+   * 
+   * @return true if the actor is dirty, false otherwise.
+   */
   inline bool
   isDirty() const
   {
@@ -167,5 +194,6 @@ class Actor
   Transform m_transform;
   Vector<SPtr<Component>> m_components;
   Vector<String> m_tags;
+  bool m_isVisible = true;
   bool m_isDirty = false;
 };

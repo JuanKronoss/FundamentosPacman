@@ -64,7 +64,7 @@ class Player: public Actor
   onCollisionExit(const WPtr<Actor> other) override;
 
   SPtr<sf::RenderWindow> m_window; // Reference to the game window for wrapping the player around the screen
-  float m_speed = 2.5f;
+  float m_speed = 200.0f;
   bool m_isMoving = false;
   sf::Vector2f m_movementDirection = { 0.0f, 0.0f };
 

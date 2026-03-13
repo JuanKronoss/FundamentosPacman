@@ -7,6 +7,10 @@
 #include "FrameworkPrerequisites.h"
 #include "Scene.h"
 #include "PhysicsManager.h"
+#include "MainMenuUI.h"
+#include "HUD.h"
+#include "PauseUI.h"
+#include "GameOverUI.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -73,6 +77,12 @@ private:
   renderScene(const Scene& scene);
 
   /**
+    * @brief Renders the user interface (UI) elements, such as the main menu or game over screen, on top of the game scene.
+    */
+  void
+  renderUI();
+
+  /**
    * @brief Handles the game over state, which may involve displaying a game over screen, resetting the game, or exiting.
    */
   void
@@ -81,11 +91,22 @@ private:
   SPtr<sf::RenderWindow> m_pWindow;
 
   Vector<SPtr<Scene>> m_pScenes; // Vector to hold multiple scenes if needed
+  SPtr<Scene> m_pActiveScene; // Pointer to the current active scene
   PhysicsManager m_physicsManager; // Manages physics and collision detection
 
   SPtr<Player> m_pPlayer;
 
   bool m_isDebugMode = true; // Flag to enable/disable debug mode for additional logging or visual aids
-  bool m_isPaused = false; // Flag to indicate whether the game is paused
+  bool m_mainMenuActive = true; // Flag to indicate whether the main menu is active
+  bool m_isPaused = true; // Flag to indicate whether the game is paused
   bool m_isGameOver = false; // Flag to indicate whether the game is over
+
+  MainMenuUI m_mainMenuUI; // UI for the main menu
+  HUD m_hud; // UI for the heads-up display (HUD) during gameplay
+  PauseUI m_pauseUI; // UI for the pause screen
+  GameOverUI m_gameOverUI; // UI for the game over screen
+
+  // TODO: Move to a ScoreManager class that keeps track of the current score and high score,
+  // and provides methods to update the score and notify the HUD to update the displayed text accordingly
+  uint32 m_maxScore = 999999999999999; // Maximum score that can be displayed in the HUD, set to a very large number to prevent overflow
 };
