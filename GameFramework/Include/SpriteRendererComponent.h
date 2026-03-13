@@ -16,8 +16,8 @@ class SpriteRendererComponent: public Component
 {
  public:
 
-  SpriteRendererComponent(const sf::Texture& _texture, bool centerOrigin = true);
-  SpriteRendererComponent(const sf::Sprite& _sprite, bool centerOrigin = true);
+  SpriteRendererComponent(const sf::Texture& _texture, bool centerOrigin = true, const sf::IntRect& intRect = sf::IntRect());
+  SpriteRendererComponent(const sf::Sprite& _sprite, bool centerOrigin = true, const sf::IntRect& intRect = sf::IntRect());
   ~SpriteRendererComponent() = default;
   
   /**
@@ -45,18 +45,18 @@ class SpriteRendererComponent: public Component
   inline void
   setTexture(const sf::Texture& texture)
   {
-    m_sprite.setTexture(texture);
+    m_texture = texture;
+    m_sprite.setTexture(m_texture);
   }
 
   /**
    * @brief Sets the texture rectangle of the sprite.
    * @param rect The new texture rectangle to use for the sprite.
+   * @param setOrigin Whether to set the origin of the sprite to its center after changing the texture rectangle. Defaults to true.
+   * If set to true, the origin of the sprite will be updated to the center of the new texture rectangle, which is important for proper rotation and scaling.
    */
-  inline void
-  setTextureRect(const sf::IntRect& rect)
-  {
-    m_sprite.setTextureRect(rect);
-  }
+  void
+  setTextureRect(const sf::IntRect& rect, const bool setOrigin = true);
 
   /**
    * @brief Returns the draw order of the owner actor.
@@ -82,7 +82,7 @@ class SpriteRendererComponent: public Component
    * @brief Sets the origin of the sprite to its center for proper rotation and scaling.
    */
   void
-  setOriginAtCenter();
+  setOriginAtCenter(const sf::IntRect& intRect = sf::IntRect());
 
   sf::Texture m_texture;
   sf::Sprite m_sprite;

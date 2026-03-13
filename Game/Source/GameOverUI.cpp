@@ -29,7 +29,7 @@ GameOverUI::populate()
 }
 
 void
-GameOverUI::displayScore(const uint32 score, const bool isHighScore)
+GameOverUI::displayScore(const uint64 score, const bool isHighScore)
 {
   if (isHighScore) {
     m_highScoreText->setString("You got a High Score!");

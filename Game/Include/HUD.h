@@ -29,7 +29,7 @@ class HUD: public UI
    * @param highScore The high score to display.
    */
   void
-  updateScore(const uint32 currentScore, const uint32 highScore);
+  updateScore(const uint64 currentScore, const uint64 highScore);
 
  private:
 

@@ -10,7 +10,8 @@
 #include "SpriteRendererComponent.h"
 #include "BoxColliderComponent.h"
 #include "Player.h"
-#include "ScoreBall.h"
+#include "Ghost.h"
+#include "PacDot.h"
 
 constexpr float FPS = 60.0f;
 constexpr float FRAME_RATE = 1.0f / FPS;
@@ -30,14 +31,15 @@ Game::initialize()
   m_pActiveScene = std::make_shared<Scene>();
   m_pScenes.push_back(m_pActiveScene);
 
-  sf::Texture pacmanTexture(TEXTURES_PATH + "Pacman.png");
-  sf::Texture redGhostTexture(TEXTURES_PATH + "RedGhost.png");
+  sf::Texture pacmanTexture(TEXTURES_PATH + "Pac-Man.png");
+  sf::Texture ghostsTexture(TEXTURES_PATH + "Ghosts.png");
+  //sf::Texture redGhostTexture(TEXTURES_PATH + "RedGhost.png");
   
   SPtr<Player> pPlayer = std::make_shared<Player>(m_pWindow);
   pPlayer->addTag("Player");
   pPlayer->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.5f);
   pPlayer->addComponent<SpriteRendererComponent>(pacmanTexture);
-  pPlayer->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(53.0f, 59.0f));
+  pPlayer->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(60.0f, 60.0f));
 
   m_pActiveScene->addActor(pPlayer);
 
@@ -47,23 +49,45 @@ Game::initialize()
       onGameOver();
     });
 
-  SPtr<Actor> pGhost = std::make_shared<Actor>();
-  pGhost->addTag("Enemy");
-  pGhost->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.25f);
-  pGhost->addComponent<SpriteRendererComponent>(redGhostTexture);
-  pGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(53.0f, 59.0f));
+  //SPtr<Ghost> pRedGhost = std::make_shared<Ghost>(GhostType::Red);
+  pRedGhost = std::make_shared<Ghost>(GhostType::Red);
+  pRedGhost->addTag("Enemy");
+  pRedGhost->addComponent<SpriteRendererComponent>(ghostsTexture);
+  pRedGhost->setProperSprite();
+  pRedGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(60.0f, 60.0f));
+  pRedGhost->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.25f);
 
-  m_pActiveScene->addActor(pGhost);
+  m_pActiveScene->addActor(pRedGhost);
 
-  sf::Texture scoreBallTexture(TEXTURES_PATH + "ScoreBall.png");
-  SPtr<ScoreBall> pScoreBall = std::make_shared<ScoreBall>();
-  pScoreBall->addTag("Score");
-  pScoreBall->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.75f);
-  pScoreBall->addComponent<SpriteRendererComponent>(scoreBallTexture);
-  pScoreBall->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
-  pScoreBall->getComponent<SpriteRendererComponent>().lock()->setDrawOrder(-1);
+  SPtr<Ghost> pOrangeGhost = std::make_shared<Ghost>(GhostType::Orange);
+  pOrangeGhost->addTag("Enemy");
+  pOrangeGhost->addComponent<SpriteRendererComponent>(ghostsTexture);
+  pOrangeGhost->setProperSprite();
+  pOrangeGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(60.0f, 60.0f));
+  pOrangeGhost->setPosition(m_pWindow->getSize().x * 0.25f, m_pWindow->getSize().y * 0.25f);
 
-  m_pActiveScene->addActor(pScoreBall);
+  m_pActiveScene->addActor(pOrangeGhost);
+
+  sf::Texture scoreBallTexture(TEXTURES_PATH + "PacDot.png");
+  SPtr<PacDot> pPacDot = std::make_shared<PacDot>();
+  pPacDot->addTag("PacDot");
+  pPacDot->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.75f);
+  pPacDot->addComponent<SpriteRendererComponent>(scoreBallTexture);
+  pPacDot->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(15.0f, 15.0f));
+  pPacDot->getComponent<SpriteRendererComponent>().lock()->setDrawOrder(-1);
+
+  m_pActiveScene->addActor(pPacDot);
+
+  sf::Texture powerPelletTexture(TEXTURES_PATH + "PowerPellet.png");
+  SPtr<PacDot> pPowerPellet = std::make_shared<PacDot>(50);
+  pPowerPellet->addTag("PacDot");
+  pPowerPellet->addTag("PowerPellet");
+  pPowerPellet->setPosition(m_pWindow->getSize().x * 0.75f, m_pWindow->getSize().y * 0.75f);
+  pPowerPellet->addComponent<SpriteRendererComponent>(powerPelletTexture);
+  pPowerPellet->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(33.0f, 33.0f));
+  pPowerPellet->getComponent<SpriteRendererComponent>().lock()->setDrawOrder(-1);
+
+  m_pActiveScene->addActor(pPowerPellet);
 
   m_pActiveScene->setAllActorsVisibility(false); // Start with all actors invisible until the main menu is dismissed
 
@@ -71,10 +95,18 @@ Game::initialize()
   m_hud.updateScore(m_scoreManager.getCurrentScore(), m_scoreManager.getHighScore()); // Initialize the HUD with the current score and high score
 
   pPlayer->onScoreChange.subscribe(
-    [&](uint32 scoreValue)
+    [&](uint64 scoreValue)
     {
       m_scoreManager.addPoints(scoreValue); // Update the score in the Score Manager when the player scores points
       m_hud.updateScore(m_scoreManager.getCurrentScore(), m_scoreManager.getHighScore()); // Notify the HUD to update the displayed score and high score
+    });
+
+  pPlayer->onInvincibilityChanged.subscribe(
+    [=](bool isInvincible)
+    {
+      // Toggle the vulnerability of the ghosts when the player's invincibility state changes
+      pRedGhost->toggleVulnerability(isInvincible);
+      pOrangeGhost->toggleVulnerability(isInvincible);
     });
 }
 
@@ -132,14 +164,16 @@ Game::handleEventsAndInput()
   }
 }
 
-void Game::updateScene(const Scene& scene, const float deltaTime)
+void
+Game::updateScene(const Scene& scene, const float deltaTime)
 {
   for (const auto& actor : scene.getActors()) {
     actor->update(deltaTime);
   }
 }
 
-void Game::renderScene(const Scene& scene)
+void
+Game::renderScene(const Scene& scene)
 {
   auto actorsInDrawingOrder = scene.getActorsInDrawingOrder();
   for (const auto& actor : actorsInDrawingOrder) {
@@ -160,6 +194,11 @@ void Game::renderScene(const Scene& scene)
         debugShape.setOutlineThickness(1.0f);
         m_pWindow->draw(debugShape);
       }
+
+      sf::Vector2f position = pRedGhost->getTransform().getPosition();
+      sf::FloatRect bounds = pRedGhost->getComponent<BoxColliderComponent>().lock()->getBounds();
+      sf::Vector2f boundsPos = sf::Vector2f(bounds.position.x, bounds.position.y);
+      bool stop = true;
     }
 
   }

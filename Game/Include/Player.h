@@ -21,9 +21,8 @@ class Player: public Actor
   update(const float deltaTime) override;
 
   Event<> onDeath;
-  Event<uint32> onScoreChange;
-  Event<> onInvincibilityActivate;
-  Event<> onInvincibilityDeactivate;
+  Event<uint64> onScoreChange;
+  Event<bool> onInvincibilityChanged;
 
  private:
   
@@ -39,6 +38,14 @@ class Player: public Actor
    */
   void
   translate(const float deltaTime);
+
+  /**
+   * @brief Toggles the player's invincibility state.
+   *
+   * @param isInvincible true to make the player invincible, false to make it vulnerable.
+   */
+  void
+  toggleInvincibility(const bool isInvincible);
 
   /**
    * @brief Called when the actor collides with another actor.

@@ -31,7 +31,7 @@ class ScoreManager
    * @brief Gets the current score.
    * @return The current score.
    */
-  inline uint32
+  inline uint64
   getCurrentScore() const
   {
     return m_currentScore;
@@ -41,7 +41,7 @@ class ScoreManager
    * @brief Gets the high score.
    * @return The high score.
    */
-  inline uint32
+  inline uint64
   getHighScore() const
   {
     return m_highScore;
@@ -52,7 +52,7 @@ class ScoreManager
    * @param points The number of points to add to the current score.
    */
   void
-  addPoints(uint32 points);
+  addPoints(uint64 points);
 
   /**
    * @brief Checks if the current score has surpassed the high score during the current game session.
@@ -66,8 +66,8 @@ class ScoreManager
 
  private:
 
-  uint32 m_currentScore = 0; // The current score of the player
-  uint32 m_highScore = 0; // The highest score achieved by the player
+  uint64 m_currentScore = 0; // The current score of the player
+  uint64 m_highScore = 0; // The highest score achieved by the player
+  uint64 m_maxScore = 999999999999999; // Maximum score that can be displayed in the HUD, set to a very large number to prevent overflow
   bool m_gotHighScore = false; // Flag to indicate if the current score has surpassed the high score during the current game session
-
 };

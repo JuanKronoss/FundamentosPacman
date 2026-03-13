@@ -2,14 +2,14 @@
  * Includes
  */
 
-#include "ScoreBall.h"
+#include "PacDot.h"
 
-ScoreBall::ScoreBall(const uint32 scoreValue)
+PacDot::PacDot(const uint64 scoreValue)
   : m_scoreValue(scoreValue)
 {}
 
 void
-ScoreBall::onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersection)
+PacDot::onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersection)
 {
   if (other.expired()) {
     return; // Do not handle collision with expired actors

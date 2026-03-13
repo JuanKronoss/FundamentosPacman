@@ -27,7 +27,7 @@ class GameOverUI: public UI
    * @brief Displays the score on the game over screen.
    */
   void
-  displayScore(const uint32 score, const bool isHighScore);
+  displayScore(const uint64 score, const bool isHighScore);
 
  private:
 

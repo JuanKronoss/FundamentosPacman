@@ -30,7 +30,7 @@ HUD::populate()
 }
 
 void
-HUD::updateScore(const uint32 currentScore, const uint32 highScore)
+HUD::updateScore(const uint64 currentScore, const uint64 highScore)
 {
   m_scoreNumText->setString(to_string(currentScore));
   m_highScoreNumText->setString(to_string(highScore));

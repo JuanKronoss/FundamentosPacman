@@ -20,6 +20,7 @@
  */
 
 class Player;
+class Ghost;
 
 /**
  * @brief Main game class responsible for managing the game loop, window, and overall game state.
@@ -108,7 +109,7 @@ private:
   PauseUI m_pauseUI; // UI for the pause screen
   GameOverUI m_gameOverUI; // UI for the game over screen
 
-  // TODO: Move to a ScoreManager class that keeps track of the current score and high score,
-  // and provides methods to update the score and notify the HUD to update the displayed text accordingly
-  uint32 m_maxScore = 999999999999999; // Maximum score that can be displayed in the HUD, set to a very large number to prevent overflow
+  // TODO: Delete this
+  SPtr<Ghost> pRedGhost;
+
 };

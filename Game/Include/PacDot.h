@@ -7,13 +7,13 @@
 #include "FrameworkPrerequisites.h"
 #include "Actor.h"
 
-class ScoreBall: public Actor
+class PacDot: public Actor
 {
  public:
   
-  ScoreBall() = default;
-  ScoreBall(const uint32 scoreValue);
-  ~ScoreBall() = default;
+  PacDot() = default;
+  PacDot(const uint64 scoreValue);
+  ~PacDot() = default;
 
   /**
    * @brief Called when the actor collides with another actor.
@@ -28,7 +28,7 @@ class ScoreBall: public Actor
    * @brief Gets the score value that this score ball represents.
    * @return The score value that this score ball represents.
    */
-  inline uint32
+  inline uint64
   getScoreValue() const
   {
     return m_scoreValue;
@@ -39,13 +39,13 @@ class ScoreBall: public Actor
    * @param scoreValue The new score value that this score ball represents.
    */
   inline void
-  setScoreValue(const uint32 scoreValue)
+  setScoreValue(const uint64 scoreValue)
   {
     m_scoreValue = scoreValue;
   }
 
  private:
 
-  uint32 m_scoreValue = 10; // The score value that this score ball represents,
+  uint64 m_scoreValue = 10; // The score value that this score ball represents,
 
 };

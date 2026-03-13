@@ -37,10 +37,11 @@ ScoreManager::saveHighScoreFile(const String& path) const
 }
 
 void
-ScoreManager::addPoints(uint32 points)
+ScoreManager::addPoints(uint64 points)
 {
   m_currentScore += points;
   if (m_currentScore > m_highScore) {
+    m_currentScore = std::min(m_currentScore, m_maxScore); // Ensure the current score does not exceed the maximum score limit
     m_highScore = m_currentScore; // Update the high score if the current score exceeds it
     m_gotHighScore = true; // Set the flag to indicate that the current score has surpassed the high score during this game session
   }
