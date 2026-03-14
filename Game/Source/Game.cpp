@@ -127,7 +127,6 @@ Game::handleEventsAndInput()
 {
   SceneManager& sceneMan = SceneManager::instance();
   ScoreManager& scoreMan = ScoreManager::instance();
-  //HUD::instance();
   while (const Optional<sf::Event> event = m_pWindow->pollEvent()) {
 
     if (event->is<sf::Event::Closed>()) {
@@ -217,19 +216,18 @@ Game::renderUI()
     GameOverUI::instance().draw(*m_pWindow);
   }
   else {
-    if (!m_isPaused) {
-      HUD::instance().draw(*m_pWindow);
+    if (m_isPaused && !m_isGameOver) {
+      PauseUI::instance().draw(*m_pWindow);
     }
     else {
-      PauseUI::instance().draw(*m_pWindow);
+      HUD::instance().draw(*m_pWindow);
     }
   }
 }
 
 void Game::onGameOver()
 {
-  // Handle game over state, e.g., display game over screen, reset game, etc.
-  cout << "Game Over!\n\a";
+  m_isPaused = true; // Pause the game when it is over
   m_isGameOver = true;
 
   ScoreManager& scoreMan = ScoreManager::instance();
@@ -238,7 +236,5 @@ void Game::onGameOver()
 
   scoreMan.saveHighScoreFile(); // Save the high score to file when the game is over
   gameOverUI.displayScore(scoreMan.getCurrentScore(), scoreMan.hasGotHighScore());
-
   sceneMan.getActiveScene()->setAllActorsVisibility(false); // Hide all actors in the active scene when the game is over, so that only the game over screen is visible
-  m_isPaused = true; // Pause the game when it is over
 }
