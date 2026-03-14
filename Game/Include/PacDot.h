@@ -12,8 +12,16 @@ class PacDot: public Actor
  public:
   
   PacDot() = default;
-  PacDot(const uint64 scoreValue);
+  PacDot(const String& _name, const uint64 _scoreValue);
+  PacDot(const uint64 _scoreValue);
   ~PacDot() = default;
+
+  /**
+   * @brief Resets the score ball's state to its initial configuration, including position, rotation, scale, and any other relevant properties.
+   * This can be used to restart the score ball or return it to a known state after certain events.
+   */
+  void
+  resetState() override;
 
   /**
    * @brief Called when the actor collides with another actor.

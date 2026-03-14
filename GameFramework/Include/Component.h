@@ -38,8 +38,28 @@ class Component
     m_pOwner = owner;
   }
 
+  /**
+   * @brief Return whether the component is active and should be updated.
+   */
+  inline bool
+  isActive() const
+  {
+    return m_isActive;
+  }
+
+  /**
+   * @brief Sets whether the component is active and should be updated.
+   * @param isActive true to make the component active, false to make it inactive.
+   */
+  inline void
+  setActive(const bool isActive)
+  {
+    m_isActive = isActive;
+  }
+
  protected:
 
   Actor* m_pOwner;
+  bool m_isActive = true; // Whether the component is active and should be updated
 
 };

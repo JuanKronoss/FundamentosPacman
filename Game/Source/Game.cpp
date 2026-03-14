@@ -5,13 +5,22 @@
 #include "Game.h"
 
 #include "FrameworkPrerequisites.h"
-#include "Scene.h"
+#include "UI.h"
+#include "MainMenuUI.h"
+#include "HUD.h"
+#include "PauseUI.h"
+#include "GameOverUI.h"
+#include "ResourceManager.h"
+#include "ScoreManager.h"
+#include "PhysicsManager.h"
+#include "SceneManager.h"
+#include "Level.h"
 #include "Actor.h"
+#include "Ghost.h"
+#include "PacDot.h"
 #include "SpriteRendererComponent.h"
 #include "BoxColliderComponent.h"
 #include "Player.h"
-#include "Ghost.h"
-#include "PacDot.h"
 
 constexpr float FPS = 60.0f;
 constexpr float FRAME_RATE = 1.0f / FPS;
@@ -21,99 +30,76 @@ Game::Game(const String& title, uint16 windowWidth, uint16 windowHeight, int16 p
   uint32 style = sf::Style::Titlebar | sf::Style::Close; // Create a window with a title bar and close button, but no resize option
   m_pWindow = make_shared<sf::RenderWindow>(sf::VideoMode({ windowWidth, windowHeight }), title, style);
   m_pWindow->setPosition({ posX, posY });
-  initialize();
+  initSystems();
+  loadResources();
 }
 
 void
-Game::initialize()
+Game::initSystems()
 {
-  // Initialize game resources, load assets, set up initial game state, etc.
-  m_pActiveScene = std::make_shared<Scene>();
-  m_pScenes.push_back(m_pActiveScene);
+  ResourceManager::startUp(); // Start up the ResourceManager module to manage game resources such as textures and sounds
+  MainMenuUI::startUp(); // Start up the MainMenuUI module to manage the main menu user interface (UI) that is displayed when the game starts
+  HUD::startUp(); // Start up the HUD module to manage the heads-up display (HUD) user interface (UI) that shows the player's score and high score during gameplay
+  PauseUI::startUp(); // Start up the PauseUI module to manage the pause menu user interface (UI) that is displayed when the game is paused
+  GameOverUI::startUp(); // Start up the GameOverUI module to manage the game over screen user interface (UI) that is displayed when the player loses the game
+  ScoreManager::startUp(); // Start up the ScoreManager module to manage player scores and high scores
+  PhysicsManager::startUp(); // Start up the PhysicsManager module to handle physics calculations and collision detection
+  SceneManager::startUp(); // Start up the SceneManager module to manage game scenes and transitions
+}
 
-  sf::Texture pacmanTexture(TEXTURES_PATH + "Pac-Man.png");
-  sf::Texture ghostsTexture(TEXTURES_PATH + "Ghosts.png");
-  //sf::Texture redGhostTexture(TEXTURES_PATH + "RedGhost.png");
-  
-  SPtr<Player> pPlayer = std::make_shared<Player>(m_pWindow);
-  pPlayer->addTag("Player");
-  pPlayer->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.5f);
-  pPlayer->addComponent<SpriteRendererComponent>(pacmanTexture);
-  pPlayer->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(60.0f, 60.0f));
+void
+Game::shutDownSystems()
+{
+  ResourceManager::shutDown(); // Shut down the ResourceManager module and free any resources it is using
+  MainMenuUI::shutDown(); // Shut down the MainMenuUI module and free any resources it is using
+  HUD::shutDown(); // Shut down the HUD module and free any resources it is using
+  PauseUI::shutDown(); // Shut down the PauseUI module and free any resources it is using
+  GameOverUI::shutDown(); // Shut down the GameOverUI module and free any resources it is using
+  ScoreManager::shutDown(); // Shut down the ScoreManager module and free any resources it is using
+  PhysicsManager::shutDown(); // Shut down the PhysicsManager module and free any resources it is using
+  SceneManager::shutDown(); // Shut down the SceneManager module and free any resources it is using
+}
 
-  m_pActiveScene->addActor(pPlayer);
+void
+Game::loadResources()
+{
+  // Load game textures
+  ResourceManager& resourceMan = ResourceManager::instance();
+
+  resourceMan.loadTexture("PacMan", TEXTURES_PATH + "Pac-Man.png");
+  resourceMan.loadTexture("Ghosts", TEXTURES_PATH + "Ghosts.png");
+  resourceMan.loadTexture("PacDot", TEXTURES_PATH + "PacDot.png");
+  resourceMan.loadTexture("PowerPellet", TEXTURES_PATH + "PowerPellet.png");
+  resourceMan.loadTexture("Wall", TEXTURES_PATH + "Wall.png");
+
+  // Load level data and set up the initial scene
+  SceneManager& sceneMan = SceneManager::instance();
+  sf::Vector2u windowSize = getWindowSize();
+  sceneMan.addScene(make_shared<Level>(LEVELS_PATH + "Level1.txt", windowSize.x, windowSize.y)); // Add the level scene to the scene manager
+  subscribeToPlayerEvent();
+}
+
+void
+Game::subscribeToPlayerEvent()
+{
+  SceneManager& sceneMan = SceneManager::instance();
+  auto pPlayer = dynamic_pointer_cast<Player>(sceneMan.getActiveScene()->getActorByName("Player")); // Get a shared pointer to the player actor in the active scene
 
   pPlayer->onDeath.subscribe(
     [&]()
     {
-      onGameOver();
+      onGameOver(); // Trigger the game over state when the player dies
     });
 
-  //SPtr<Ghost> pRedGhost = std::make_shared<Ghost>(GhostType::Red);
-  pRedGhost = std::make_shared<Ghost>(GhostType::Red);
-  pRedGhost->addTag("Enemy");
-  pRedGhost->addComponent<SpriteRendererComponent>(ghostsTexture);
-  pRedGhost->setProperSprite();
-  pRedGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(60.0f, 60.0f));
-  pRedGhost->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.25f);
-
-  m_pActiveScene->addActor(pRedGhost);
-
-  SPtr<Ghost> pOrangeGhost = std::make_shared<Ghost>(GhostType::Orange);
-  pOrangeGhost->addTag("Enemy");
-  pOrangeGhost->addComponent<SpriteRendererComponent>(ghostsTexture);
-  pOrangeGhost->setProperSprite();
-  pOrangeGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(60.0f, 60.0f));
-  pOrangeGhost->setPosition(m_pWindow->getSize().x * 0.25f, m_pWindow->getSize().y * 0.25f);
-
-  m_pActiveScene->addActor(pOrangeGhost);
-
-  sf::Texture scoreBallTexture(TEXTURES_PATH + "PacDot.png");
-  SPtr<PacDot> pPacDot = std::make_shared<PacDot>();
-  pPacDot->addTag("PacDot");
-  pPacDot->setPosition(m_pWindow->getSize().x * 0.5f, m_pWindow->getSize().y * 0.75f);
-  pPacDot->addComponent<SpriteRendererComponent>(scoreBallTexture);
-  pPacDot->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(15.0f, 15.0f));
-  pPacDot->getComponent<SpriteRendererComponent>().lock()->setDrawOrder(-1);
-
-  m_pActiveScene->addActor(pPacDot);
-
-  sf::Texture powerPelletTexture(TEXTURES_PATH + "PowerPellet.png");
-  SPtr<PacDot> pPowerPellet = std::make_shared<PacDot>(50);
-  pPowerPellet->addTag("PacDot");
-  pPowerPellet->addTag("PowerPellet");
-  pPowerPellet->setPosition(m_pWindow->getSize().x * 0.75f, m_pWindow->getSize().y * 0.75f);
-  pPowerPellet->addComponent<SpriteRendererComponent>(powerPelletTexture);
-  pPowerPellet->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(33.0f, 33.0f));
-  pPowerPellet->getComponent<SpriteRendererComponent>().lock()->setDrawOrder(-1);
-
-  m_pActiveScene->addActor(pPowerPellet);
-
-  m_pActiveScene->setAllActorsVisibility(false); // Start with all actors invisible until the main menu is dismissed
-
-  m_scoreManager.loadHighScoreFile();
-  m_hud.updateScore(m_scoreManager.getCurrentScore(), m_scoreManager.getHighScore()); // Initialize the HUD with the current score and high score
-
-  pPlayer->onScoreChange.subscribe(
-    [&](uint64 scoreValue)
-    {
-      m_scoreManager.addPoints(scoreValue); // Update the score in the Score Manager when the player scores points
-      m_hud.updateScore(m_scoreManager.getCurrentScore(), m_scoreManager.getHighScore()); // Notify the HUD to update the displayed score and high score
-    });
-
-  pPlayer->onInvincibilityChanged.subscribe(
-    [=](bool isInvincible)
-    {
-      // Toggle the vulnerability of the ghosts when the player's invincibility state changes
-      pRedGhost->toggleVulnerability(isInvincible);
-      pOrangeGhost->toggleVulnerability(isInvincible);
-    });
+  sceneMan.getActiveScene()->setAllActorsVisibility(false); // Hide all actors in the active scene when the game starts, so that only the main menu is visible until the player starts the game
 }
 
 void
 Game::run()
 {
   sf::Clock clock;
+  SceneManager& sceneMan = SceneManager::instance();
+  PhysicsManager& physicsMan = PhysicsManager::instance();
   while (m_pWindow->isOpen()) {
 
     sf::Time elapsed = clock.restart();
@@ -124,13 +110,13 @@ Game::run()
     m_pWindow->clear();
 
     if (!m_isPaused) {
-      updateScene(*m_pScenes[0], deltaTime);
-      m_physicsManager.handleCollisions(m_pScenes[0]->getActors());
+      updateScene(*sceneMan.getActiveScene(), deltaTime);
+      physicsMan.handleCollisions(sceneMan.getActiveScene()->getActors());
     }
 
-    renderScene(*m_pScenes[0]);
+    renderScene(*sceneMan.getActiveScene());
     renderUI();
-    m_pActiveScene->destroyMarkedActors(); // Destroy any actors that were marked for destruction during the update or collision handling
+    sceneMan.getActiveScene()->destroyMarkedActors(); // Destroy any actors that were marked for destruction during the update or collision handling
     m_pWindow->display();
 
   }
@@ -139,6 +125,9 @@ Game::run()
 void
 Game::handleEventsAndInput()
 {
+  SceneManager& sceneMan = SceneManager::instance();
+  ScoreManager& scoreMan = ScoreManager::instance();
+  //HUD::instance();
   while (const Optional<sf::Event> event = m_pWindow->pollEvent()) {
 
     if (event->is<sf::Event::Closed>()) {
@@ -151,13 +140,27 @@ Game::handleEventsAndInput()
       }
 
       if (keyPressed->code == sf::Keyboard::Key::Enter) {
-        m_mainMenuActive = m_mainMenuActive = false;
-        m_isPaused = false; // Start the game when 'Enter' is pressed
-        m_pActiveScene->setAllActorsVisibility(true); // Make all actors visible when the main menu is dismissed
+        if (m_mainMenuActive) {
+          m_mainMenuActive = m_mainMenuActive = false;
+          m_isPaused = false; // Start the game when 'Enter' is pressed
+          sceneMan.getActiveScene()->setAllActorsVisibility(true); // Make all actors visible when the main menu is dismissed
+        }
+        else if (m_isGameOver) {
+          // Reset the game state to start a new game when 'Enter' is pressed on the game over screen
+          m_isGameOver = false;
+          m_isPaused = false; // Unpause the game to start a new game
+          scoreMan.resetCurrentScore(); // Reset the current score for the new game
+          HUD::instance().updateScore(scoreMan.getCurrentScore(), scoreMan.getHighScore()); // Update the HUD with the reset score and current high score
+          sceneMan.getActiveScene()->reload(); // Reset the active scene to restart the game
+          subscribeToPlayerEvent();
+          sceneMan.getActiveScene()->setAllActorsVisibility(true);
+        }
       }
 
       if (keyPressed->scancode == sf::Keyboard::Scancode::P) {
-        m_isPaused = !m_isPaused; // Toggle pause state when 'P' is pressed
+        if (!m_mainMenuActive && !m_isGameOver) {
+          m_isPaused = !m_isPaused; // Toggle pause state when 'P' is pressed
+        }
       }
     }
 
@@ -186,7 +189,11 @@ Game::renderScene(const Scene& scene)
     if (m_isDebugMode) {
       WPtr<BoxColliderComponent> boxCollider = actor->getComponent<BoxColliderComponent>();
       if (!boxCollider.expired()) {
-        sf::FloatRect bounds = boxCollider.lock()->getBounds();
+        auto pBoxCollider = boxCollider.lock();
+        if (!pBoxCollider->isActive()) {
+          continue; // Skip rendering inactive box colliders
+        }
+        sf::FloatRect bounds = pBoxCollider->getBounds();
         sf::RectangleShape debugShape(sf::Vector2f(bounds.size.x, bounds.size.y));
         debugShape.setPosition(sf::Vector2f(bounds.position.x, bounds.position.y));
         debugShape.setFillColor(sf::Color::Transparent);
@@ -194,11 +201,6 @@ Game::renderScene(const Scene& scene)
         debugShape.setOutlineThickness(1.0f);
         m_pWindow->draw(debugShape);
       }
-
-      sf::Vector2f position = pRedGhost->getTransform().getPosition();
-      sf::FloatRect bounds = pRedGhost->getComponent<BoxColliderComponent>().lock()->getBounds();
-      sf::Vector2f boundsPos = sf::Vector2f(bounds.position.x, bounds.position.y);
-      bool stop = true;
     }
 
   }
@@ -209,17 +211,17 @@ void
 Game::renderUI()
 {
   if (m_mainMenuActive) {
-    m_mainMenuUI.draw(*m_pWindow);
+    MainMenuUI::instance().draw(*m_pWindow);
   }
   else if (m_isGameOver) {
-    m_gameOverUI.draw(*m_pWindow);
+    GameOverUI::instance().draw(*m_pWindow);
   }
   else {
     if (!m_isPaused) {
-      m_hud.draw(*m_pWindow);
+      HUD::instance().draw(*m_pWindow);
     }
     else {
-      m_pauseUI.draw(*m_pWindow);
+      PauseUI::instance().draw(*m_pWindow);
     }
   }
 }
@@ -230,6 +232,13 @@ void Game::onGameOver()
   cout << "Game Over!\n\a";
   m_isGameOver = true;
 
-  m_scoreManager.saveHighScoreFile(); // Save the high score to file when the game is over
-  m_gameOverUI.displayScore(m_scoreManager.getCurrentScore(), m_scoreManager.hasGotHighScore());
+  ScoreManager& scoreMan = ScoreManager::instance();
+  GameOverUI& gameOverUI = GameOverUI::instance();
+  SceneManager& sceneMan = SceneManager::instance();
+
+  scoreMan.saveHighScoreFile(); // Save the high score to file when the game is over
+  gameOverUI.displayScore(scoreMan.getCurrentScore(), scoreMan.hasGotHighScore());
+
+  sceneMan.getActiveScene()->setAllActorsVisibility(false); // Hide all actors in the active scene when the game is over, so that only the game over screen is visible
+  m_isPaused = true; // Pause the game when it is over
 }

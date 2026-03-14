@@ -5,12 +5,13 @@
  */
 
 #include "UI.h"
+#include "Module.h"
 
 /**
  * @brief Represents the pause user interface (UI) of the game,
  * which is displayed when the player pauses the game and allows the player to resume.
  */
-class PauseUI: public UI
+class PauseUI : public UI, public Module<PauseUI>
 {
  public:
  

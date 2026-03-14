@@ -30,10 +30,23 @@ class Ghost: public Actor
   };
 
   /**
+   * @brief Resets the ghost's state to its initial configuration, including position, rotation, scale, and any other relevant properties.
+   * This can be used to restart the ghost or return it to a known state after certain events.
+   */
+  void
+  resetState() override;
+
+  /**
    * @brief Sets the appropriate sprite for the ghost based on its current state.
    */
   void
   setProperSprite();
+
+  /**
+   * 
+   */
+  void
+  update(const float deltaTime) override;
 
   /**
    * @brief Toggles the ghost's vulnerability state, which determines whether it can be eaten by the player.
@@ -42,6 +55,15 @@ class Ghost: public Actor
    */
   void
   toggleVulnerability(const bool isVulnerable);
+
+  /**
+   * @brief Called when the ghost collides with another actor.
+   *
+   * @param other The other actor involved in the collision.
+   * @param intersection The intersection rectangle of the collision.
+   */
+  void
+  onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersection) override;
 
   /**
    * @brief Gets the score value awarded to the player when they eat this ghost while it's vulnerable.
@@ -66,4 +88,8 @@ class Ghost: public Actor
    float m_speed = 150.0f; // Base speed of the ghost
    bool m_isVulnerable = false; // Indicates whether the ghost is currently vulnerable (can be eaten by the player)
    uint64 m_scoreValue = 100; // The score value awarded to the player when they eat this ghost while it's vulnerable
+
+   bool m_isDead = false; // Indicates whether the ghost is currently dead (has been eaten by the player)
+   float m_deadDuration = 5.0f; // Duration for which the ghost remains dead after being eaten by the player
+   float m_deadTimer = 0.0f; // Timer to track how long the ghost has been dead
 };

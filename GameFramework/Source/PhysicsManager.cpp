@@ -17,13 +17,21 @@ PhysicsManager::handleCollisions(const Vector<SPtr<Actor>>& actors)
     if (colliderA.expired()) {
       continue; // Skip actors without a BoxColliderComponent
     }
+    auto pColliderA = colliderA.lock();
+    if (!pColliderA->isActive()) {
+      continue; // Skip actors with inactive BoxColliderComponents
+    }
     for (size_t j = i + 1; j < numActors; ++j) {
       auto colliderB = actors[j]->getComponent<BoxColliderComponent>();
       if (colliderB.expired()) {
         continue; // Skip actors without a BoxColliderComponent
       }
+      auto pColliderB = colliderB.lock();
+      if (!pColliderB->isActive()) {
+        continue; // Skip actors with inactive BoxColliderComponents
+      }
       // Check for collision
-      Optional intersection = colliderA.lock()->getBounds().findIntersection(colliderB.lock()->getBounds());
+      Optional intersection = pColliderA->getBounds().findIntersection(pColliderB->getBounds());
       if (!intersection.has_value()) {
         continue; // No collision detected, skip to the next pair
       }

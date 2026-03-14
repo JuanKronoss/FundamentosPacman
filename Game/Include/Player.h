@@ -14,8 +14,16 @@ class Player: public Actor
 {
  public:
   
-  Player(WPtr<sf::RenderWindow> pWindow);
+  Player(const String& _name, const uint32 _windowWidth, const uint32 _windowHeight);
+  Player(const uint32 _windowWidth, const uint32 _windowHeight);
   ~Player() = default;
+
+  /**
+   * @brief Resets the player's state to its initial configuration, including position, movement direction, speed, invincibility status, and any other relevant properties.
+   * This can be used to restart the player or return it to a known state after certain events, such as losing a life or restarting the game.
+   */
+  void
+  resetState() override;
 
   void
   update(const float deltaTime) override;
@@ -73,12 +81,12 @@ class Player: public Actor
   void
   onCollisionExit(const WPtr<Actor> other) override;
 
-  SPtr<sf::RenderWindow> m_window; // Reference to the game window for wrapping the player around the screen
   float m_speed = 200.0f;
   float m_invincibilityDuration = 5.0f; // Duration of invincibility in seconds
   float m_invincibilityTimer = 0.0f; // Timer to track the remaining invincibility time
   bool m_isMoving = false;
   bool m_isInvincible = false;
   sf::Vector2f m_movementDirection = { 0.0f, 0.0f };
-
+  uint32 m_windowWidth = 800; // Default window width, can be set through the constructor
+  uint32 m_windowHeight = 900; // Default window height, can be set through the constructor
 };

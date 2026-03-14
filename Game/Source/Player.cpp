@@ -5,12 +5,24 @@
 
 #include <SFML/Graphics.hpp>
 
-Player::Player(WPtr<sf::RenderWindow> pWindow)
+Player::Player(const String& _name, const uint32 _windowWidth, const uint32 _windowHeight)
+  : Actor(_name), m_windowWidth(_windowWidth), m_windowHeight(_windowHeight)
+{}
+
+Player::Player(const uint32 _windowWidth, const uint32 _windowHeight)
+  : m_windowWidth(_windowWidth), m_windowHeight(_windowHeight)
+{}
+
+void
+Player::resetState()
 {
-  if (pWindow.expired()) {
-    throw std::invalid_argument("Player constructor received an expired window pointer");
-  }
-  m_window = pWindow.lock();
+  Actor::resetState(); // Call the base class resetState to reset components
+  m_speed = 200.0f;
+  m_invincibilityDuration = 5.0f; // Duration of invincibility in seconds
+  m_invincibilityTimer = 0.0f; // Timer to track the remaining invincibility time
+  m_isMoving = false;
+  m_isInvincible = false;
+  m_movementDirection = { 0.0f, 0.0f };
 }
 
 void Player::update(const float deltaTime)
@@ -81,17 +93,16 @@ Player::translate(const float deltaTime)
     move(m_movementDirection.x * moveMagnitude, m_movementDirection.y * moveMagnitude);
     // Wrap the player around the screen edges
     sf::Vector2f position = getTransform().getPosition();
-    sf::Vector2u windowSize = m_window->getSize();
     if (position.x < 0.0f) {
-      setPosition(static_cast<float>(windowSize.x), position.y);
+      setPosition(static_cast<float>(m_windowWidth), position.y);
     }
-    else if (position.x > windowSize.x) {
+    else if (position.x > static_cast<float>(m_windowWidth)) {
       setPosition(0.0f, position.y);
     }
     if (position.y < 0.0f) {
-      setPosition(position.x, static_cast<float>(windowSize.y));
+      setPosition(position.x, static_cast<float>(m_windowHeight));
     }
-    else if (position.y > windowSize.y) {
+    else if (position.y > static_cast<float>(m_windowHeight)) {
       setPosition(position.x, 0.0f);
     }
   }

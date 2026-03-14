@@ -5,6 +5,26 @@
 #include "Scene.h"
 #include "Actor.h"
 #include "SpriteRendererComponent.h"
+#include "ResourceManager.h"
+
+Scene::Scene(const String& _dataFile)
+  : m_dataPath(_dataFile)
+{}
+
+void
+Scene::loadLevelFile(const String& _dataFile)
+{
+  if (!_dataFile.empty()) {
+    m_dataPath = _dataFile;
+  }
+}
+
+void
+Scene::reload()
+{
+  m_pActors.clear(); // Clear existing actors before reloading the scene
+  loadLevelFile(m_dataPath); // Reload the scene using the stored data path
+}
 
 void Scene::addActor(const WPtr<Actor>& actor)
 {
@@ -49,7 +69,6 @@ Vector<SPtr<Actor>>
 Scene::getActorsInDrawingOrder(const bool onlyVisible) const
 {
   Vector<SPtr<Actor>> sortedActors;
-  sortedActors.reserve(m_pActors.size());
 
   // Filter while copying if only visible actors should be included
   for (const auto& actor : m_pActors) {
@@ -68,6 +87,18 @@ Scene::getActorsInDrawingOrder(const bool onlyVisible) const
          return drawOrderA < drawOrderB;
        });
   return sortedActors;
+}
+
+
+SPtr<Actor>
+Scene::getActorByName(const String& name) const
+{
+  for (const auto& actor : m_pActors) {
+    if (actor->getName() == name) {
+      return actor;
+    }
+  }
+  return nullptr; // Return nullptr if no actor with the specified name is found
 }
 
 void

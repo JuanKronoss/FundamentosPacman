@@ -5,6 +5,7 @@
  */
 
 #include "FrameworkPrerequisites.h"
+#include "Module.h"
 
 /**
  * Forward declarations
@@ -26,7 +27,7 @@ struct CollisionPair
 /**
  * @brief Manages the physics and collision detection for actors in the scene.
  */
-class PhysicsManager
+class PhysicsManager : public Module<PhysicsManager>
 {
  public:
   

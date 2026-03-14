@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <vector>
+#include <unordered_map>
 #include <set>
 #include <optional>
 #include <string>
@@ -29,6 +30,7 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <exception>
 
 /**
  * Using declarations
@@ -52,6 +54,7 @@ using std::find;
 using std::tie;
 using std::to_string;
 using std::function;
+using Exception = std::exception;
 
 template <typename T>
 using SPtr = std::shared_ptr<T>;
@@ -61,6 +64,9 @@ using WPtr = std::weak_ptr<T>;
 
 template<class T>
 using Vector = std::vector<T>;
+
+template<class Key, class Value>
+using UMap = std::unordered_map<Key, Value>;
 
 template<class T>
 using Set = std::set<T>;
@@ -81,3 +87,4 @@ const String ASSETS_PATH = "Assets/";
 const String TEXTURES_PATH = ASSETS_PATH + "Textures/";
 const String FONTS_PATH = ASSETS_PATH + "Fonts/";
 const String SCORE_FILE_PATH = ASSETS_PATH + "Scores/";
+const String LEVELS_PATH = ASSETS_PATH + "Levels/";

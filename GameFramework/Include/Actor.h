@@ -21,7 +21,17 @@ class Actor
  public:
   
   Actor() = default;
+  Actor(const String& _name);
+  Actor(const Transform& _iniTransform);
+  Actor(const String& _name, const Transform& _iniTransform);
   virtual ~Actor() = default;
+
+  /**
+   * @brief Resets the actor's state to its initial configuration, including position, rotation, scale, and any other relevant properties.
+   * This can be used to restart the actor or return it to a known state after certain events.
+   */
+  virtual void
+  resetState();
 
   /**
    * @brief Adds a tag to the actor if. Case sensitive.
@@ -119,27 +129,51 @@ class Actor
   onCollisionExit(const WPtr<Actor> other);
 
   /**
+   * @brief Checks if the actor is currently active, meaning it should be updated and participate in the game logic.
+   * 
+   * @return true if the actor is active, false otherwise.
+   */
+  inline bool
+  isActive() const
+  {
+    return m_isActive;
+  }
+
+  /**
+   * @brief Sets whether the actor is active and should be updated and participate in the game logic.
+   * 
+   * @param isActive true to make the actor active, false to make it inactive.
+   */
+  inline void
+  setActive(const bool isActive)
+  {
+    m_isActive = isActive;
+  }
+
+  /**
    * @brief Checks if the actor is currently visible.
    * 
    * @return true if the actor is visible, false otherwise.
    */
-  inline bool
-  isVisible() const
-  {
-    return m_isVisible;
-  }
+  bool
+  isVisible() const;
 
   /**
    * @brief Sets the visibility of the actor.
    * 
    * @param isVisible true to make the actor visible, false to make it invisible.
    */ 
-  inline void
-  setVisible(const bool isVisible)
-  {
-    m_isVisible = isVisible;
-  }
+  void
+  setVisible(const bool isVisible) const;
   
+  /**
+   * @brief Sets whether the actor's collision components are active and should participate in collision detection.
+   * 
+   * @param active true to make the actor's collision components active, false to make them inactive.
+   */
+  void
+  toggleActiveCollisions(const bool active) const;
+
   /**
    * @brief Checks if the actor is dirty, meaning it has been modified and may need to be updated or redrawn.
    * 
@@ -213,12 +247,25 @@ class Actor
     return WPtr<T>();
   }
 
+  /**
+   * @brief Gets the name of the actor.
+   * 
+   * @return A reference to the name of the actor.
+   */
+  inline const String&
+  getName() const
+  {
+    return m_name;
+  }
+
  protected:
   
+  String m_name = "Actor"; // The name of the actor
+  Transform m_initialTransform; // The initial transform of the actor, used for resetting the actor's state
   Transform m_transform;
   Vector<SPtr<Component>> m_components;
   Vector<String> m_tags;
-  bool m_isVisible = true;
+  bool m_isActive = true; // Whether the actor is active and should be updated
   bool m_isDirty = false;
   bool m_toBeDestroyed = false; // Flag to indicate whether the actor should be destroyed at the end of the current frame
 };

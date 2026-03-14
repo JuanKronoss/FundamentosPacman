@@ -2,8 +2,8 @@
 
 int32 main() {
 
-  Game game;
-  game.run();
+  Game pacman;
+  pacman.run();
 
   return 0;
 }

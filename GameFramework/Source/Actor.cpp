@@ -5,8 +5,35 @@
 #include "Actor.h"
 #include "Component.h"
 #include "SpriteRendererComponent.h"
+#include "BoxColliderComponent.h"
 
 #include <SFML/Graphics.hpp>
+
+Actor::Actor(const String& _name)
+  : m_name(_name)
+{}
+
+Actor::Actor(const Transform& _iniTransform)
+  : m_transform(_iniTransform)
+{
+  m_isDirty = true; // Mark the actor as dirty to ensure it gets updated in the first frame
+}
+
+Actor::Actor(const String& _name, const Transform& _iniTransform)
+  : m_name(_name), m_transform(_iniTransform)
+{
+  m_isDirty = true; // Mark the actor as dirty to ensure it gets updated in the first frame
+}
+
+void
+Actor::resetState()
+{
+  m_transform = m_initialTransform;
+  m_isDirty = true; // Mark the actor as dirty to ensure it gets updated in the next frame
+  for (const auto& component : m_components) {
+    component->setActive(true); // Reactivate all components when resetting the actor's state
+  }
+}
 
 void
 Actor::addTag(const String& tag)
@@ -96,3 +123,32 @@ Actor::onCollisionExit(const WPtr<Actor> other)
     return; // Do not handle collision with expired actors
   }
 }
+
+bool
+Actor::isVisible() const
+{
+  auto spriteRenderer = getComponent<SpriteRendererComponent>();
+  if (!spriteRenderer.expired()) {
+    return spriteRenderer.lock()->isActive();
+  }
+  return false; // If the actor doesn't have a SpriteRendererComponent, we consider it invisible
+}
+
+void
+Actor::setVisible(const bool isVisible) const
+{
+  auto spriteRenderer = getComponent<SpriteRendererComponent>();
+  if (!spriteRenderer.expired()) {
+    spriteRenderer.lock()->setActive(isVisible);
+  }
+}
+
+void
+Actor::toggleActiveCollisions(const bool active) const
+{
+  auto boxCollider = getComponent<BoxColliderComponent>();
+  if (!boxCollider.expired()) {
+    boxCollider.lock()->setActive(active);
+  }
+}
+

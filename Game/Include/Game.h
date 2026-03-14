@@ -5,13 +5,6 @@
  */
 
 #include "FrameworkPrerequisites.h"
-#include "Scene.h"
-#include "PhysicsManager.h"
-#include "MainMenuUI.h"
-#include "HUD.h"
-#include "PauseUI.h"
-#include "GameOverUI.h"
-#include "ScoreManager.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -21,6 +14,7 @@
 
 class Player;
 class Ghost;
+class Scene;
 
 /**
  * @brief Main game class responsible for managing the game loop, window, and overall game state.
@@ -54,11 +48,23 @@ class Game
 
 private:
   
+  void
+  initSystems();
+
+  void
+  shutDownSystems();
+
   /**
-   * @brief Initializes the game, loading resources, setting up the initial scene, and preparing the game state.
+   * @brief Loads game resources such as textures
    */
   void
-  initialize();
+  loadResources();
+
+  /**
+   * @brief Subscribes to player onGameOver event to trigger the game over state when the player dies.
+   */
+  void
+  subscribeToPlayerEvent();
 
   /**
    * @brief Handles window events and player input, such as closing the window or pausing the game.
@@ -84,18 +90,27 @@ private:
   void
   renderUI();
 
+
+ public:
+
+  /**
+   * @brief Gets the size of the game window.
+   */
+  inline sf::Vector2u
+  getWindowSize() const
+  {
+    return m_pWindow->getSize();
+  }
+
   /**
    * @brief Handles the game over state, which may involve displaying a game over screen, resetting the game, or exiting.
    */
   void
   onGameOver();
 
-  SPtr<sf::RenderWindow> m_pWindow;
+private:
 
-  Vector<SPtr<Scene>> m_pScenes; // Vector to hold multiple scenes if needed
-  SPtr<Scene> m_pActiveScene; // Pointer to the current active scene
-  PhysicsManager m_physicsManager; // Manages physics and collision detection
-  ScoreManager m_scoreManager; // Manages the player's score and high score
+  SPtr<sf::RenderWindow> m_pWindow;
 
   SPtr<Player> m_pPlayer;
 
@@ -103,13 +118,5 @@ private:
   bool m_mainMenuActive = true; // Flag to indicate whether the main menu is active
   bool m_isPaused = true; // Flag to indicate whether the game is paused
   bool m_isGameOver = false; // Flag to indicate whether the game is over
-
-  MainMenuUI m_mainMenuUI; // UI for the main menu
-  HUD m_hud; // UI for the heads-up display (HUD) during gameplay
-  PauseUI m_pauseUI; // UI for the pause screen
-  GameOverUI m_gameOverUI; // UI for the game over screen
-
-  // TODO: Delete this
-  SPtr<Ghost> pRedGhost;
 
 };

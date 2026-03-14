@@ -5,8 +5,13 @@
  */
 
 #include "FrameworkPrerequisites.h"
+#include "Module.h"
 
-class ScoreManager
+/**
+ * @brief Manages the player's score and high score, including loading and saving the high score to a file,
+ * updating the current score, and providing access to the current score and high score for display in the HUD.
+ */
+class ScoreManager : public Module<ScoreManager>
 {
  public:
 
@@ -62,6 +67,13 @@ class ScoreManager
   hasGotHighScore() const
   {
     return m_gotHighScore;
+  }
+
+  inline void
+  resetCurrentScore()
+  {
+    m_currentScore = 0; // Reset the current score to 0 for a new game session
+    m_gotHighScore = false; // Reset the flag for surpassing high score for the new game session
   }
 
  private:
