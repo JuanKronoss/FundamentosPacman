@@ -24,6 +24,7 @@
 #include <vector>
 #include <unordered_map>
 #include <set>
+#include <utility> // pair
 #include <optional>
 #include <string>
 #include <fstream>
@@ -31,6 +32,7 @@
 #include <functional>
 #include <iostream>
 #include <exception>
+#include <filesystem>
 
 /**
  * Using declarations
@@ -46,6 +48,7 @@ using int32 = std::int32_t;
 using int64 = std::int64_t;
 
 using std::cout;
+using std::cerr;
 using std::make_shared;
 using std::dynamic_pointer_cast;
 using std::remove_if;
@@ -54,6 +57,7 @@ using std::find;
 using std::tie;
 using std::to_string;
 using std::function;
+
 using Exception = std::exception;
 
 template <typename T>
@@ -70,6 +74,9 @@ using UMap = std::unordered_map<Key, Value>;
 
 template<class T>
 using Set = std::set<T>;
+
+template<class Key, class Value>
+using Pair = std::pair<Key, Value>;
 
 template <typename T>
 using Optional = std::optional<T>;
@@ -88,3 +95,4 @@ const String TEXTURES_PATH = ASSETS_PATH + "Textures/";
 const String FONTS_PATH = ASSETS_PATH + "Fonts/";
 const String SCORE_FILE_PATH = ASSETS_PATH + "Scores/";
 const String LEVELS_PATH = ASSETS_PATH + "Levels/";
+const String MODS_PATH = ASSETS_PATH + "Mods/";

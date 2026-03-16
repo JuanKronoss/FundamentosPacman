@@ -32,7 +32,7 @@ void Player::update(const float deltaTime)
   Actor::update(deltaTime); // Call the base class update to update components
 
   // Handle invincibility timer
-  if (m_isInvincible) {
+  if (m_isInvincible && !m_isForeverInvincible) {
     m_invincibilityTimer += deltaTime;
     if (m_invincibilityTimer >= m_invincibilityDuration) {
       toggleInvincibility(false); // Toggle invincibility off when the timer exceeds the duration

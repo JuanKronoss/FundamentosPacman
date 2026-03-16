@@ -20,10 +20,20 @@
 #include "PacDot.h"
 #include "SpriteRendererComponent.h"
 #include "BoxColliderComponent.h"
+#include "ScriptComponent.h"
 #include "Player.h"
 
 constexpr float FPS = 60.0f;
 constexpr float FRAME_RATE = 1.0f / FPS;
+
+struct DYNAMIC_LIBRARY_API ModInfo
+{
+  const char* targetActor{}; // The name of the target actor that this mod will be applied to, e.g., "Player"
+  ScriptFunction scriptFunction{}; // The script function that defines the behavior of the mod, which will be executed by the ScriptComponent attached to the target actor
+  bool executeOnlyOnce = true; // A flag indicating whether the mod's script function should be executed only once (true) or on every update (false)
+};
+
+typedef ModInfo(*LoadModFunc)();
 
 Game::Game(const String& title, uint16 windowWidth, uint16 windowHeight, int16 posX, int16 posY)
 {
@@ -32,6 +42,8 @@ Game::Game(const String& title, uint16 windowWidth, uint16 windowHeight, int16 p
   m_pWindow->setPosition({ posX, posY });
   initSystems();
   loadResources();
+  subscribeToPlayerEvent();
+  loadMods();
 }
 
 void
@@ -74,9 +86,8 @@ Game::loadResources()
 
   // Load level data and set up the initial scene
   SceneManager& sceneMan = SceneManager::instance();
-  sf::Vector2u windowSize = getWindowSize();
+  sf::Vector2u windowSize = m_pWindow->getSize();
   sceneMan.addScene(make_shared<Level>(LEVELS_PATH + "Level1.txt", windowSize.x, windowSize.y)); // Add the level scene to the scene manager
-  subscribeToPlayerEvent();
 }
 
 void
@@ -146,13 +157,7 @@ Game::handleEventsAndInput()
         }
         else if (m_isGameOver) {
           // Reset the game state to start a new game when 'Enter' is pressed on the game over screen
-          m_isGameOver = false;
-          m_isPaused = false; // Unpause the game to start a new game
-          scoreMan.resetCurrentScore(); // Reset the current score for the new game
-          HUD::instance().updateScore(scoreMan.getCurrentScore(), scoreMan.getHighScore()); // Update the HUD with the reset score and current high score
-          sceneMan.getActiveScene()->reload(); // Reset the active scene to restart the game
-          subscribeToPlayerEvent();
-          sceneMan.getActiveScene()->setAllActorsVisibility(true);
+          resetGame();
         }
       }
 
@@ -238,3 +243,141 @@ void Game::onGameOver()
   gameOverUI.displayScore(scoreMan.getCurrentScore(), scoreMan.hasGotHighScore());
   sceneMan.getActiveScene()->setAllActorsVisibility(false); // Hide all actors in the active scene when the game is over, so that only the game over screen is visible
 }
+
+void
+Game::resetGame()
+{
+  ScoreManager& scoreMan = ScoreManager::instance();
+  SceneManager& sceneMan = SceneManager::instance();
+
+  m_isGameOver = false;
+  m_isPaused = false; // Unpause the game to start a new game
+  scoreMan.resetCurrentScore(); // Reset the current score for the new game
+  HUD::instance().updateScore(scoreMan.getCurrentScore(), scoreMan.getHighScore()); // Update the HUD with the reset score and current high score
+  sceneMan.getActiveScene()->reload(); // Reset the active scene to restart the game
+  subscribeToPlayerEvent();
+  loadMods(); // Reload mods to reapply them to the new game session
+  sceneMan.getActiveScene()->setAllActorsVisibility(true);
+}
+
+#ifdef __linux__
+void
+Game::loadMods()
+{
+  std::filesystem::path modPath(MODS_PATH);
+  if (!std::filesystem::exists(modPath)) {
+    cout << "No mods found\n";
+    return;
+  }
+  for (auto const& dir_entry : std::filesystem::directory_iterator{ modPath }) {
+    std::filesystem::path filePath = dir_entry.path();
+    if (filePath.extension() == ".so")
+    {
+      String modName = filePath.stem().string();
+      cout << "Loading mod: " << modName << "\n";
+
+      void* handle = dlopen(filePath.c_str(), RTLD_LAZY);
+      if (nullptr == handle)
+      {
+        cerr << "Cannot open library: " << dlerror() << "\n";
+        continue;
+      }
+
+      LoadModFunc loadMod = reinterpret_cast<LoadModFunc>(dlsym(handle, "loadMod"));
+      if (nullptr == loadMod)
+      {
+        cerr << "Cannot load symbol loadMod: " << dlerror() << "\n";
+        dlclose(handle);
+        continue;
+      }
+
+      try
+      {
+        ModInfo modInfo = loadMod();
+        if (modInfo.scriptFunction)
+        {
+          SceneManager& sceneMan = SceneManager::instance();
+          auto pActor = sceneMan.getActiveScene()->getActorByName(modInfo.targetActor);
+          if (!pActor)
+          {
+            cerr << "Target actor (" << modInfo.targetActor << ") not found for mod: " << modName << "\n";
+            dlclose(handle);
+            continue;
+          }
+          pActor->addComponent<ScriptComponent>(ScriptFunction(modInfo.scriptFunction), modInfo.executeOnlyOnce);
+
+          cout << "Mod loaded successfully\n";
+        }
+        else
+        {
+          cerr << "Failed to load mod\n";
+        }
+      }
+      catch (Exception& e)
+      {
+        cerr << "Error loading mod: " << e.what() << "\n";
+
+        dlclose(handle);
+        continue;
+      }
+    }
+  }
+}
+#elif defined(_WIN32)
+
+#include <windows.h>
+
+void
+Game::loadMods()
+{
+  std::filesystem::path modPath(MODS_PATH);
+  if (!std::filesystem::exists(modPath)) {
+    cout << "No mods found\n";
+    return;
+  }
+  for (auto const& dir_entry : std::filesystem::directory_iterator{ modPath }) {
+    std::filesystem::path filePath = dir_entry.path();
+    if (filePath.extension() == ".dll") {
+      String modName = filePath.stem().string();
+      //cout << "Loading mod: " << modName << "\n";
+      HMODULE hModule = LoadLibrary(filePath.string().c_str());
+      if (!hModule) {
+        cerr << "Cannot open library: " << GetLastError() << "\n";
+        continue;
+      }
+      LoadModFunc loadMod = reinterpret_cast<LoadModFunc>(GetProcAddress(hModule, "loadMod"));
+      if (!loadMod) {
+        cerr << "Cannot load symbol loadMod: " << GetLastError() << "\n";
+        FreeLibrary(hModule);
+        continue;
+      }
+      try
+      {
+        ModInfo modInfo = loadMod();
+        if (modInfo.scriptFunction) {
+          SceneManager& sceneMan = SceneManager::instance();
+          auto pActor = sceneMan.getActiveScene()->getActorByName(modInfo.targetActor);
+          if (!pActor)
+          {
+            cerr << "Target actor (" << modInfo.targetActor << ") not found for mod: " << modName << "\n";
+            FreeLibrary(hModule);
+            continue;
+          }
+          pActor->addComponent<ScriptComponent>(ScriptFunction(modInfo.scriptFunction), modInfo.executeOnlyOnce);
+          //cout << "Mod loaded successfully\n";
+        }
+        else
+        {
+          cerr << "Failed to load mod\n";
+        }
+      }
+      catch (Exception& e)
+      {
+        cerr << "Error loading mod: " << e.what() << "\n";
+        FreeLibrary(hModule);
+        continue;
+      }
+    }
+  }
+}
+#endif

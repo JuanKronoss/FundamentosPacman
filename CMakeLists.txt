@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 
 project(PacmanGame)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/Assets/Mods")
 
 include(FetchContent)
 FetchContent_Declare(SFML
@@ -16,4 +16,6 @@ FetchContent_MakeAvailable(SFML)
 set(COMMON_COMPILE_FEATURES cxx_std_20)
 
 add_subdirectory(GameFramework)
+add_subdirectory(SpeedBoostMod)
+add_subdirectory(InvincibilityMod)
 add_subdirectory(Game)

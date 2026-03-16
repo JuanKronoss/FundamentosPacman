@@ -28,6 +28,43 @@ class Player: public Actor
   void
   update(const float deltaTime) override;
 
+  /**
+   * Mod Functions
+   */
+
+  /**
+   * @brief Gets the player's current movement speed.
+   */
+  inline const float
+  getSpeed() const
+  {
+    return m_speed;
+  }
+
+  /**
+   * @brief Sets the player's movement speed.
+   * @param _speed The new movement speed for the player.
+   */
+  inline void
+  setSpeed(const float _speed)
+  {
+    m_speed = _speed;
+  }
+
+  /**
+   * @brief Sets whether the player is permanently invincible.
+   * If set to true, the player will remain invincible indefinitely until this flag is set to false.
+   * This can be used for mods that grant permanent invincibility to the player.
+   */
+  inline void
+  setForeverInvincibility(const bool isForeverInvincible)
+  {
+    m_isForeverInvincible = isForeverInvincible;
+    if (isForeverInvincible) {
+      toggleInvincibility(true); // If the player is set to be permanently invincible, we also need to toggle invincibility on immediately
+    }
+  }
+
   Event<> onDeath;
   Event<uint64> onScoreChange;
   Event<bool> onInvincibilityChanged;
@@ -86,7 +123,9 @@ class Player: public Actor
   float m_invincibilityTimer = 0.0f; // Timer to track the remaining invincibility time
   bool m_isMoving = false;
   bool m_isInvincible = false;
+  bool m_isForeverInvincible = false; // A flag to indicate whether the player is permanently invincible, which can be set based on the mod information when the Player is created
   sf::Vector2f m_movementDirection = { 0.0f, 0.0f };
   uint32 m_windowWidth = 800; // Default window width, can be set through the constructor
   uint32 m_windowHeight = 900; // Default window height, can be set through the constructor
+
 };

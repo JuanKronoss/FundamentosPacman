@@ -90,23 +90,17 @@ private:
   void
   renderUI();
 
-
- public:
-
-  /**
-   * @brief Gets the size of the game window.
-   */
-  inline sf::Vector2u
-  getWindowSize() const
-  {
-    return m_pWindow->getSize();
-  }
-
   /**
    * @brief Handles the game over state, which may involve displaying a game over screen, resetting the game, or exiting.
    */
   void
   onGameOver();
+
+  void
+  resetGame();
+
+  void
+  loadMods();
 
 private:
 
