@@ -1,31 +1,19 @@
-#include "Player.h"
+#include "PlayerPacMan.h"
 #include "SpriteRendererComponent.h"
 #include "PacDot.h"
 #include "Ghost.h"
 
 #include <SFML/Graphics.hpp>
 
-Player::Player(const String& _name, const uint32 _windowWidth, const uint32 _windowHeight)
-  : Actor(_name), m_windowWidth(_windowWidth), m_windowHeight(_windowHeight)
+PlayerPacMan::PlayerPacMan(const String& _name, const uint32 _windowWidth, const uint32 _windowHeight)
+  : PlayerBase(_name, _windowWidth, _windowHeight)
 {}
 
-Player::Player(const uint32 _windowWidth, const uint32 _windowHeight)
-  : m_windowWidth(_windowWidth), m_windowHeight(_windowHeight)
+PlayerPacMan::PlayerPacMan(const uint32 _windowWidth, const uint32 _windowHeight)
+  : PlayerBase(_windowWidth, _windowHeight)
 {}
 
-void
-Player::resetState()
-{
-  Actor::resetState(); // Call the base class resetState to reset components
-  m_speed = 200.0f;
-  m_invincibilityDuration = 5.0f; // Duration of invincibility in seconds
-  m_invincibilityTimer = 0.0f; // Timer to track the remaining invincibility time
-  m_isMoving = false;
-  m_isInvincible = false;
-  m_movementDirection = { 0.0f, 0.0f };
-}
-
-void Player::update(const float deltaTime)
+void PlayerPacMan::update(const float deltaTime)
 {
   handleInput(deltaTime); // Handle player input to move the character
 
@@ -41,7 +29,7 @@ void Player::update(const float deltaTime)
 }
 
 void
-Player::handleInput(const float deltaTime)
+PlayerPacMan::handleInput(const float deltaTime)
 {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) ||
       sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
@@ -86,7 +74,7 @@ Player::handleInput(const float deltaTime)
 }
 
 void
-Player::translate(const float deltaTime)
+PlayerPacMan::translate(const float deltaTime)
 {
   if (m_isMoving) {
     float moveMagnitude = m_speed * deltaTime;
@@ -109,15 +97,7 @@ Player::translate(const float deltaTime)
 }
 
 void
-Player::toggleInvincibility(const bool isInvincible)
-{
-  m_isInvincible = isInvincible;
-  m_invincibilityTimer = 0.0f; // Reset the invincibility timer when toggling invincibility
-  onInvincibilityChanged.invoke(isInvincible); // Trigger the invincibility changed event with the new invincibility state
-}
-
-void
-Player::onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersection)
+PlayerPacMan::onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersection)
 {
   if (other.expired()) {
     return; // Do not handle collision with expired actors
@@ -154,7 +134,7 @@ Player::onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersect
 }
 
 void
-Player::onCollisionStay(const WPtr<Actor> other, const sf::FloatRect& intersection)
+PlayerPacMan::onCollisionStay(const WPtr<Actor> other, const sf::FloatRect& intersection)
 {
   if (other.expired()) {
     return; // Do not handle collision with expired actors
@@ -187,7 +167,7 @@ Player::onCollisionStay(const WPtr<Actor> other, const sf::FloatRect& intersecti
 }
 
 void
-Player::onCollisionExit(const WPtr<Actor> other)
+PlayerPacMan::onCollisionExit(const WPtr<Actor> other)
 {
   if (other.expired()) {
     return; // Do not handle collision with expired actors

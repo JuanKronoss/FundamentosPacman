@@ -75,7 +75,9 @@ Ghost::update(const float deltaTime)
     m_deadTimer += deltaTime;
     if (m_deadTimer >= m_deadDuration) {
       m_isDead = false; // Revive the ghost after the dead duration has passed
-      toggleVulnerability(false); // Make the ghost invulnerable again when it revives
+      if (!m_isForeverVulnerable) {
+        toggleVulnerability(false); // Make the ghost invulnerable again when it revives
+      }
       setVisible(true); // Make the ghost visible again when it revives
       toggleActiveCollisions(true); // Enable the ghost's collisions again when it revives
       m_deadTimer = 0.0f; // Reset the dead timer
@@ -108,5 +110,14 @@ Ghost::onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersecti
       setVisible(false); // Hide the ghost when it's eaten by the player
       toggleActiveCollisions(false); // Disable the ghost's collisions when it's eaten by the player
     }
+  }
+}
+
+void
+Ghost::setIsForeverVulnerable(const bool isForeverVulnerable)
+{
+  m_isForeverVulnerable = isForeverVulnerable;
+  if (m_isForeverVulnerable) {
+    toggleVulnerability(true); // If the ghost is set to be permanently vulnerable, we make it vulnerable immediately
   }
 }

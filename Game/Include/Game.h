@@ -12,8 +12,6 @@
  * Forward declarations
  */
 
-class Player;
-class Ghost;
 class Scene;
 
 /**
@@ -105,8 +103,6 @@ private:
 private:
 
   SPtr<sf::RenderWindow> m_pWindow;
-
-  SPtr<Player> m_pPlayer;
 
   bool m_isDebugMode = true; // Flag to enable/disable debug mode for additional logging or visual aids
   bool m_mainMenuActive = true; // Flag to indicate whether the main menu is active

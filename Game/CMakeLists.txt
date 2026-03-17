@@ -24,10 +24,3 @@ add_custom_command(TARGET PacmanGame POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
   "${CMAKE_SOURCE_DIR}/Assets"
   "$<TARGET_FILE_DIR:PacmanGame>/Assets")
-
-#add_custom_target(CopyAssets ALL
-#  COMMAND ${CMAKE_COMMAND} -E copy_directory
-#  "${CMAKE_SOURCE_DIR}/Assets"
-#  "$<TARGET_FILE_DIR:PacmanGame>/Assets")
-#
-#add_dependencies(CopyAssets PacmanGame)

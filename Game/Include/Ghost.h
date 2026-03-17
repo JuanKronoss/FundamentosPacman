@@ -75,6 +75,45 @@ class Ghost: public Actor
     return m_scoreValue;
   }
 
+  /**
+   * @brief Sets the score value awarded to the player when they eat this ghost while it's vulnerable.
+   * @param scoreValue The new score value for this ghost.
+   */
+  inline void
+    setScoreValue(const uint64 scoreValue)
+  {
+    m_scoreValue = scoreValue;
+  }
+
+  /**
+   * @brief Checks if the ghost is currently vulnerable, meaning it can be eaten by the player.
+   * @return true if the ghost is vulnerable, false otherwise.
+   */
+  inline bool
+  isVulnerable() const
+  {
+    return m_isVulnerable;
+  }
+
+  /**
+   * @brief Checks if the ghost is permanently vulnerable, meaning it can always be eaten by the player regardless of its current state.
+   * This can be used for special conditions or mods that make the ghost always vulnerable.
+   * @return true if the ghost is permanently vulnerable, false otherwise.
+   */
+  inline bool
+  isForeverVulnerable() const
+  {
+    return m_isForeverVulnerable;
+  }
+
+  /**
+   * @brief Sets whether the ghost is permanently vulnerable, meaning it can always be eaten by the player regardless of its current state.
+   * This can be used for special conditions or mods that make the ghost always vulnerable.
+   * @param isForeverVulnerable true to make the ghost permanently vulnerable, false to make it vulnerable based on its current state.
+   */
+  void
+  setIsForeverVulnerable(const bool isForeverVulnerable);
+
  private:
 
    GhostState m_state{ GhostState::Idle };
@@ -86,6 +125,7 @@ class Ghost: public Actor
    sf::IntRect m_vulnerableSpriteRect; // Texture rectangle for the vulnerable state
 
    float m_speed = 150.0f; // Base speed of the ghost
+   bool m_isForeverVulnerable = false; // Indicates whether the ghost is permanently vulnerable (e.g., due to a mod or special condition)
    bool m_isVulnerable = false; // Indicates whether the ghost is currently vulnerable (can be eaten by the player)
    uint64 m_scoreValue = 100; // The score value awarded to the player when they eat this ghost while it's vulnerable
 

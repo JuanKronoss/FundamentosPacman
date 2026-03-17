@@ -7,7 +7,7 @@
 #include "Actor.h"
 #include "SpriteRendererComponent.h"
 #include "BoxColliderComponent.h"
-#include "Player.h"
+#include "PlayerPacMan.h"
 #include "Ghost.h"
 #include "PacDot.h"
 #include "ResourceManager.h"
@@ -32,7 +32,7 @@ Level::loadLevelFile(const String & _dataFile)
   float windowWidthF = static_cast<float>(m_windowWidth);
   float windowHeightF = static_cast<float>(m_windowHeight);
 
-  SPtr<Player> pPlayer = make_shared<Player>("Player", m_windowWidth, m_windowHeight);
+  SPtr<PlayerPacMan> pPlayer = make_shared<PlayerPacMan>("Player", m_windowWidth, m_windowHeight);
   pPlayer->addTag("Player");
   pPlayer->setPosition(windowWidthF * 0.5f, windowHeightF * 0.5f);
   pPlayer->addComponent<SpriteRendererComponent>(resourceMan.getTexture("PacMan"));
@@ -103,6 +103,14 @@ Level::loadLevelFile(const String & _dataFile)
       // Toggle the vulnerability of the ghosts when the player's invincibility state changes
       pRedGhost->toggleVulnerability(isInvincible);
       pOrangeGhost->toggleVulnerability(isInvincible);
+    });
+
+  pPlayer->onForeverInvincibilitySet.subscribe(
+    [=](bool isForeverInvincible)
+    {
+      // Set the ghosts to be permanently vulnerable if the player is set to be permanently invincible, and vice versa
+      pRedGhost->setIsForeverVulnerable(isForeverInvincible);
+      pOrangeGhost->setIsForeverVulnerable(isForeverInvincible);
     });
 
 }

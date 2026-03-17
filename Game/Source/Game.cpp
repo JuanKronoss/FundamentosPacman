@@ -21,7 +21,7 @@
 #include "SpriteRendererComponent.h"
 #include "BoxColliderComponent.h"
 #include "ScriptComponent.h"
-#include "Player.h"
+#include "PlayerPacMan.h"
 
 constexpr float FPS = 60.0f;
 constexpr float FRAME_RATE = 1.0f / FPS;
@@ -94,7 +94,7 @@ void
 Game::subscribeToPlayerEvent()
 {
   SceneManager& sceneMan = SceneManager::instance();
-  auto pPlayer = dynamic_pointer_cast<Player>(sceneMan.getActiveScene()->getActorByName("Player")); // Get a shared pointer to the player actor in the active scene
+  auto pPlayer = dynamic_pointer_cast<PlayerPacMan>(sceneMan.getActiveScene()->getActorByName("Player")); // Get a shared pointer to the player actor in the active scene
 
   pPlayer->onDeath.subscribe(
     [&]()
