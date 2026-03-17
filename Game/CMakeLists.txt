@@ -14,6 +14,8 @@ target_include_directories(PacmanGame PRIVATE
 
 target_link_libraries(PacmanGame PRIVATE GameFramework)
 
+#target_compile_definitions(PacmanGame PRIVATE FRAMEWORK_STATIC_LIB)
+
 target_compile_features(PacmanGame PRIVATE ${COMMON_COMPILE_FEATURES})
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic")

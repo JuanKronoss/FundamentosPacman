@@ -10,10 +10,10 @@
 /**
  * @brief Represents the player character in the game, which is a type of actor.
  */
-class Player: public Actor
+class FRAMEWORK_EXPORT Player: public Actor
 {
  public:
-  
+
   Player(const String& _name, const uint32 _windowWidth, const uint32 _windowHeight);
   Player(const uint32 _windowWidth, const uint32 _windowHeight);
   ~Player() = default;
@@ -118,6 +118,7 @@ class Player: public Actor
   void
   onCollisionExit(const WPtr<Actor> other) override;
 
+  //float m_newTestFloat = 0.0f;
   float m_speed = 200.0f;
   float m_invincibilityDuration = 5.0f; // Duration of invincibility in seconds
   float m_invincibilityTimer = 0.0f; // Timer to track the remaining invincibility time

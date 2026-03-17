@@ -14,7 +14,7 @@ typedef void (*ScriptFunction)(Actor* pActor);
  * @brief A component that allows attaching custom script behavior to an actor.
  * The script function is executed during the update phase of the component, allowing for dynamic behavior defined at runtime.
  */
-class ScriptComponent: public Component
+class FRAMEWORK_EXPORT ScriptComponent: public Component
 {
  public:
 

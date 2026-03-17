@@ -101,6 +101,18 @@ Scene::getActorByName(const String& name) const
   return nullptr; // Return nullptr if no actor with the specified name is found
 }
 
+Vector<SPtr<Actor>>
+Scene::getActorsWithTag(const String& tag) const
+{
+  Vector<SPtr<Actor>> actorsWithTag;
+  for (const auto& actor : m_pActors) {
+    if (actor->hasTag(tag)) {
+      actorsWithTag.push_back(actor);
+    }
+  }
+  return actorsWithTag; // Return the vector of actors with the specified tag, which may be empty if no actors have the tag
+}
+
 void
 Scene::destroyMarkedActors()
 {

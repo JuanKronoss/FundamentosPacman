@@ -12,7 +12,7 @@
 /**
  * @brief A component that represents a box collider for an actor, used for collision detection.
  */
-class BoxColliderComponent: public Component
+class FRAMEWORK_EXPORT BoxColliderComponent: public Component
 {
  public:
 
@@ -38,8 +38,8 @@ class BoxColliderComponent: public Component
   }
 
   /**
-   * @brief Gets the bounds of the box collider.
-   * @return The bounds of the box collider.
+   * @brief Sets the bounds of the box collider.
+   * @return The new bounds of the box collider.
    */
   inline void
   setBounds(const sf::FloatRect& bounds)
@@ -76,7 +76,6 @@ class BoxColliderComponent: public Component
    */
   void
   setBoundsAtCenter();
-
 
   sf::FloatRect m_bounds;
 };

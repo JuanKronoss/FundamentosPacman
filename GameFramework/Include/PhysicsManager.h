@@ -30,7 +30,7 @@ struct CollisionPair
 class PhysicsManager : public Module<PhysicsManager>
 {
  public:
-  
+
   PhysicsManager() = default;
   ~PhysicsManager() = default;
 

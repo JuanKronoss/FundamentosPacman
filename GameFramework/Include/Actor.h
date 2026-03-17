@@ -16,7 +16,7 @@ class Component;
 /**
  * @brief Base class for all actors in the game.
  */
-class Actor
+class FRAMEWORK_EXPORT Actor
 {
  public:
   
@@ -258,8 +258,12 @@ class Actor
     return m_name;
   }
 
+  void
+  setTestFloat(const float value);
+
  protected:
   
+  float m_testFloat = 0.0f;
   String m_name = "Actor"; // The name of the actor
   Transform m_initialTransform; // The initial transform of the actor, used for resetting the actor's state
   Transform m_transform;
@@ -268,4 +272,5 @@ class Actor
   bool m_isActive = true; // Whether the actor is active and should be updated
   bool m_isDirty = false;
   bool m_toBeDestroyed = false; // Flag to indicate whether the actor should be destroyed at the end of the current frame
+
 };

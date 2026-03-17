@@ -26,7 +26,7 @@
 constexpr float FPS = 60.0f;
 constexpr float FRAME_RATE = 1.0f / FPS;
 
-struct DYNAMIC_LIBRARY_API ModInfo
+struct FRAMEWORK_EXPORT ModInfo
 {
   const char* targetActor{}; // The name of the target actor that this mod will be applied to, e.g., "Player"
   ScriptFunction scriptFunction{}; // The script function that defines the behavior of the mod, which will be executed by the ScriptComponent attached to the target actor
@@ -356,15 +356,17 @@ Game::loadMods()
         ModInfo modInfo = loadMod();
         if (modInfo.scriptFunction) {
           SceneManager& sceneMan = SceneManager::instance();
-          auto pActor = sceneMan.getActiveScene()->getActorByName(modInfo.targetActor);
-          if (!pActor)
+          auto pActors = sceneMan.getActiveScene()->getActorsWithTag(modInfo.targetActor);
+          if (pActors.empty())
           {
-            cerr << "Target actor (" << modInfo.targetActor << ") not found for mod: " << modName << "\n";
+            cerr << "Target actor with tag '" << modInfo.targetActor << "' not found for mod: " << modName << "\n";
             FreeLibrary(hModule);
             continue;
           }
-          pActor->addComponent<ScriptComponent>(ScriptFunction(modInfo.scriptFunction), modInfo.executeOnlyOnce);
-          //cout << "Mod loaded successfully\n";
+          for (const auto& pActor : pActors)
+          {
+            pActor->addComponent<ScriptComponent>(ScriptFunction(modInfo.scriptFunction), modInfo.executeOnlyOnce);
+          }
         }
         else
         {

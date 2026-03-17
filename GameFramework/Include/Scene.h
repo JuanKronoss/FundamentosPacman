@@ -15,7 +15,7 @@ class Actor;
 /**
  * @brief Represents a scene in the game, which contains actors and manages their lifecycle.
  */
-class Scene
+class FRAMEWORK_EXPORT Scene
 {
  public:
 
@@ -63,8 +63,6 @@ class Scene
   void
   setAllActorsVisibility(const bool isVisible);
 
-  
-
   /**
    * @brief Gets the actors in the scene that are currently visible.
    * 
@@ -99,6 +97,15 @@ class Scene
    */
   SPtr<Actor>
   getActorByName(const String& name) const;
+
+  /**
+   * @brief Gets the actors in the scene that have a specific tag.
+   * 
+   * @param tag The tag to search for. Case sensitive.
+   * @return A vector of shared pointers to the actors in the scene that have the specified tag. If no actors have the tag, returns an empty vector.
+   */
+  Vector<SPtr<Actor>>
+  getActorsWithTag(const String& tag) const;
 
   /**
    * @brief Destroys all actors in the scene that are marked for destruction.

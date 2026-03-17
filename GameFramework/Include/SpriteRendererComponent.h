@@ -12,7 +12,7 @@
 /**
  * @brief A component that handles rendering a sprite for an actor.
  */
-class SpriteRendererComponent: public Component
+class FRAMEWORK_EXPORT SpriteRendererComponent: public Component
 {
  public:
 

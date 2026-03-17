@@ -152,3 +152,10 @@ Actor::toggleActiveCollisions(const bool active) const
   }
 }
 
+void
+Actor::setTestFloat(const float value)
+{
+  cout << "Initial value of m_testFloat: " << m_testFloat << "\n";
+  m_testFloat = value;
+  cout << "Updated value of m_testFloat: " << m_testFloat << "\n";
+}

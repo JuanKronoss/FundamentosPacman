@@ -4,15 +4,42 @@
  * Defines the export/import macros for the dynamic library.
  */
 
-#ifdef __linux__
-  #define DYNAMIC_LIBRARY_API __attribute__((visibility("default")))
-#else // Windows
-  #ifdef DYNAMIC_LIBRARY_EXPORTS
-    #define DYNAMIC_LIBRARY_API __declspec(dllexport)
-  #else
-    #define DYNAMIC_LIBRARY_API __declspec(dllimport)
-  #endif // DYNAMIC_LIBRARY_EXPORTS
-#endif // __linux__
+#if defined _WIN32
+#   if defined _MSC_VER
+#     if defined FRAMEWORK_STATIC_LIB
+#       define FRAMEWORK_EXPORT
+#     else
+#       if defined FRAMEWORK_EXPORTS
+#         define FRAMEWORK_EXPORT __declspec(dllexport)
+#       else
+#         define FRAMEWORK_EXPORT __declspec(dllimport)
+#       endif
+#     endif
+#   else  //Any other Compiler
+#     if defined FRAMEWORK_STATIC_LIB
+#       define FRAMEWORK_EXPORT
+#     else
+#       if defined FRAMEWORK_EXPORTS
+#         define FRAMEWORK_EXPORT __attribute__ ((dllexport))
+#       else
+#         define FRAMEWORK_EXPORT __attribute__ ((dllimport))
+#       endif
+#     endif
+#   endif
+#   define FRAMEWORK_HIDDEN
+#   define DYNAMIC_LIB_EXPORT __declspec(dllexport)
+#elif defined __linux__
+ //Unix-like systems (Linux, macOS, PS4, PS5, Android, IOS)
+#   if defined FRAMEWORK_STATIC_LIB
+#     define FRAMEWORK_EXPORT
+#   else
+#     define FRAMEWORK_EXPORT __attribute__((visibility("default")))
+#   endif
+#   define FRAMEWORK_HIDDEN __attribute__((visibility("hidden")))
+#   define DYNAMIC_LIB_EXPORT __attribute__((visibility("default")))
+#else
+#   error "Unsupported platform detected for FRAMEWORK_EXPORT."
+#endif
 
 /**
  * Includes

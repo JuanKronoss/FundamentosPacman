@@ -3,19 +3,11 @@
  */
 
 #include "FrameworkPrerequisites.h"
+#include "ModInfo.h"
 
 #include "Player.h"
 
-typedef void (*ScriptFunction)(Actor* pActor);
-
-struct DYNAMIC_LIBRARY_API ModInfo
-{
-  const char* targetActor{}; // The name of the target actor that this mod will be applied to, e.g., "Player"
-  ScriptFunction scriptFunction{}; // The script function that defines the behavior of the mod, which will be executed by the ScriptComponent attached to the target actor
-  bool executeOnlyOnce = true; // A flag indicating whether the mod's script function should be executed only once (true) or on every update (false)
-};
-
-extern "C" DYNAMIC_LIBRARY_API ModInfo loadMod()
+extern "C" DYNAMIC_LIB_EXPORT ModInfo loadMod()
 {
   static ScriptFunction invincibilityModScript = [](Actor* pActor)
   {
