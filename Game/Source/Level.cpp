@@ -54,7 +54,8 @@ Level::loadLevelFile(const String & _dataFile)
           pWall->addTag("Wall");
           pWall->setPosition(xPos, yPos);
           pWall->addComponent<SpriteRendererComponent>(resourceMan.getTexture("Wall"));
-          pWall->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_tileSize, m_tileSize));
+          pWall->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_tileSize - 2.0f, m_tileSize - 2.0f));
+          pWall->getComponent<SpriteRendererComponent>().lock()->setDrawOrder(-2);
           addActor(pWall);
           break;
         }
@@ -84,7 +85,7 @@ Level::loadLevelFile(const String & _dataFile)
           pPlayer->addTag("Player");
           pPlayer->setPosition(xPos, yPos);
           pPlayer->addComponent<SpriteRendererComponent>(resourceMan.getTexture("PacMan"));
-          pPlayer->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_tileSize, m_tileSize));
+          pPlayer->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_tileSize - 2.0f, m_tileSize - 2.0f));
           addActor(pPlayer);
           break;
         }

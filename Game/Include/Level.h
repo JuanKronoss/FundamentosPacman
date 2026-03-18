@@ -51,5 +51,5 @@ class Level: public Scene
   float m_tileSize = 38.0f; // Assuming each tile in the level corresponds to a 32x32 pixel area
   float m_halfTileSize = m_tileSize * 0.5f; // Calculate half the tile size for centering actors on the grid
   float m_pacDotSize = 8.0f;
-  float m_powerPelletSize = 18.0f;
+  float m_powerPelletSize = 22.0f;
 };
