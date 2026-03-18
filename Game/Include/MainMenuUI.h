@@ -17,7 +17,7 @@ class MainMenuUI : public UI, public Module<MainMenuUI>
 {
   public:
   
-  MainMenuUI();
+  MainMenuUI(const float _windowWidth, const float _windowHeight);
   ~MainMenuUI() = default;
 
   /**

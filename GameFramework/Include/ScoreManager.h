@@ -15,7 +15,7 @@ class ScoreManager : public Module<ScoreManager>
 {
  public:
 
-  ScoreManager() = default;
+  ScoreManager(const String& path = SCORE_FILE_PATH + "HighScore.score");
   ~ScoreManager() = default;
 
   /**
@@ -69,6 +69,9 @@ class ScoreManager : public Module<ScoreManager>
     return m_gotHighScore;
   }
 
+  /**
+   * @brief Resets the current score to 0 and resets the flag for surpassing the high score for a new game session.
+   */
   inline void
   resetCurrentScore()
   {
@@ -76,10 +79,20 @@ class ScoreManager : public Module<ScoreManager>
     m_gotHighScore = false; // Reset the flag for surpassing high score for the new game session
   }
 
+  /**
+   * @brief Gets the maximum score that can be displayed in the HUD.
+   * @return The maximum score that can be displayed in the HUD.
+   */
+  uint64
+  getMaxScore() const
+  {
+    return m_maxScore;
+  }
+
  private:
 
   uint64 m_currentScore = 0; // The current score of the player
   uint64 m_highScore = 0; // The highest score achieved by the player
-  uint64 m_maxScore = 999999999999999; // Maximum score that can be displayed in the HUD, set to a very large number to prevent overflow
+  uint64 m_maxScore = 9999999999999999999; // Maximum score that can be displayed in the HUD, set to a very large number to prevent overflow
   bool m_gotHighScore = false; // Flag to indicate if the current score has surpassed the high score during the current game session
 };

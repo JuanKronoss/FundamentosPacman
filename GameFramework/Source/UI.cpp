@@ -4,8 +4,10 @@
 
 #include "UI.h"
 
-UI::UI()
+UI::UI(const float _windowWidth, const float _windowHeight)
+  : m_windowWidth(_windowWidth), m_windowHeight(_windowHeight)
 {
+  m_halfWindowWidth = std::floor(m_windowWidth * 0.5f);
   // Load the arcade font from file
   if (!m_arcadeFont.openFromFile(FONTS_PATH + "ArcadeFont.ttf")) {
     throw std::runtime_error("Failed to load arcade font from file: " + FONTS_PATH + "ArcadeFont.ttf");

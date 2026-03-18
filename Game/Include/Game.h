@@ -22,10 +22,10 @@ class Game
  public:
 
   Game(const String& title = "Pakkuman",
-       uint16 windowWidth = 800,
-       uint16 windowHeight = 900,
-       int16 posX = 560,
-       int16 posY = 50);
+       uint16 windowWidth = 874,
+       uint16 windowHeight = 980,
+       int16 posX = 523,
+       int16 posY = 0);
 
   ~Game() = default;
 

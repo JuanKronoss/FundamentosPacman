@@ -119,8 +119,8 @@ class Ghost: public Actor
    GhostState m_state{ GhostState::Idle };
    GhostType m_type{ GhostType::Red };
 
-   int m_ghostWidth = 60; // Width of the ghost sprite
-   int m_ghostHeight = 60; // Height of the ghost sprite
+   int m_ghostWidth = 32; // Width of the ghost sprite
+   int m_ghostHeight = 32; // Height of the ghost sprite
    sf::IntRect m_normalSpriteRect; // Texture rectangle for the normal state
    sf::IntRect m_vulnerableSpriteRect; // Texture rectangle for the vulnerable state
 

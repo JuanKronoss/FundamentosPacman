@@ -49,11 +49,14 @@ Game::Game(const String& title, uint16 windowWidth, uint16 windowHeight, int16 p
 void
 Game::initSystems()
 {
+  float windowWidth = static_cast<float>(m_pWindow->getSize().x);
+  float windowHeight = static_cast<float>(m_pWindow->getSize().y);
+
   ResourceManager::startUp(); // Start up the ResourceManager module to manage game resources such as textures and sounds
-  MainMenuUI::startUp(); // Start up the MainMenuUI module to manage the main menu user interface (UI) that is displayed when the game starts
-  HUD::startUp(); // Start up the HUD module to manage the heads-up display (HUD) user interface (UI) that shows the player's score and high score during gameplay
-  PauseUI::startUp(); // Start up the PauseUI module to manage the pause menu user interface (UI) that is displayed when the game is paused
-  GameOverUI::startUp(); // Start up the GameOverUI module to manage the game over screen user interface (UI) that is displayed when the player loses the game
+  MainMenuUI::startUp(windowWidth, windowHeight); // Start up the MainMenuUI module to manage the main menu user interface (UI) that is displayed when the game starts
+  HUD::startUp(windowWidth, windowHeight); // Start up the HUD module to manage the heads-up display (HUD) user interface (UI) that shows the player's score and high score during gameplay
+  PauseUI::startUp(windowWidth, windowHeight); // Start up the PauseUI module to manage the pause menu user interface (UI) that is displayed when the game is paused
+  GameOverUI::startUp(windowWidth, windowHeight); // Start up the GameOverUI module to manage the game over screen user interface (UI) that is displayed when the player loses the game
   ScoreManager::startUp(); // Start up the ScoreManager module to manage player scores and high scores
   PhysicsManager::startUp(); // Start up the PhysicsManager module to handle physics calculations and collision detection
   SceneManager::startUp(); // Start up the SceneManager module to manage game scenes and transitions
@@ -166,8 +169,8 @@ Game::handleEventsAndInput()
           m_isPaused = !m_isPaused; // Toggle pause state when 'P' is pressed
         }
       }
-    }
 
+    }
   }
 }
 
@@ -253,6 +256,7 @@ Game::resetGame()
   m_isGameOver = false;
   m_isPaused = false; // Unpause the game to start a new game
   scoreMan.resetCurrentScore(); // Reset the current score for the new game
+  scoreMan.loadHighScoreFile(); // Reload the high score from file to ensure it is up to date for the new game session
   HUD::instance().updateScore(scoreMan.getCurrentScore(), scoreMan.getHighScore()); // Update the HUD with the reset score and current high score
   sceneMan.getActiveScene()->reload(); // Reset the active scene to restart the game
   subscribeToPlayerEvent();
@@ -297,15 +301,17 @@ Game::loadMods()
         if (modInfo.scriptFunction)
         {
           SceneManager& sceneMan = SceneManager::instance();
-          auto pActor = sceneMan.getActiveScene()->getActorByName(modInfo.targetActor);
-          if (!pActor)
+          auto pActors = sceneMan.getActiveScene()->getActorsWithTag(modInfo.targetActor);
+          if (pActors.empty())
           {
-            cerr << "Target actor (" << modInfo.targetActor << ") not found for mod: " << modName << "\n";
+            cerr << "Target actor with tag '" << modInfo.targetActor << "' not found for mod: " << modName << "\n";
             dlclose(handle);
             continue;
           }
-          pActor->addComponent<ScriptComponent>(ScriptFunction(modInfo.scriptFunction), modInfo.executeOnlyOnce);
-
+          for (const auto& pActor : pActors)
+          {
+            pActor->addComponent<ScriptComponent>(ScriptFunction(modInfo.scriptFunction), modInfo.executeOnlyOnce);
+          }
           cout << "Mod loaded successfully\n";
         }
         else

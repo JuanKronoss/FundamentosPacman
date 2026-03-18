@@ -15,7 +15,7 @@ class UI
 {
  public:
 
-  UI();
+  UI(const float _windowWidth, const float _windowHeight);
   virtual ~UI() = default;
 
   /**
@@ -53,5 +53,7 @@ class UI
   Vector<SPtr<sf::Drawable>> m_drawables;
 
   sf::Font m_arcadeFont; // Font used for UI text elements, can be loaded and used by derived classes
-
+  float m_windowWidth = 874.0f; // Default window width, can be adjusted as needed
+  float m_windowHeight = 980.0f; // Default window height, can be adjusted as needed
+  float m_halfWindowWidth = std::floor(m_windowWidth * 0.5f); // Half of the window width, calculated for convenience
 };

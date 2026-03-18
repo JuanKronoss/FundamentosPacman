@@ -15,7 +15,7 @@ class PauseUI : public UI, public Module<PauseUI>
 {
  public:
  
-  PauseUI();
+  PauseUI(const float _windowWidth, const float _windowHeight);
   ~PauseUI() = default;
   
   /**

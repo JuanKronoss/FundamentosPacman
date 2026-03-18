@@ -15,7 +15,7 @@ class HUD : public UI, public Module<HUD>
 {
  public:
 
-  HUD();
+  HUD(const float _windowWidth, const float _windowHeight);
   ~HUD() = default;
 
   /**

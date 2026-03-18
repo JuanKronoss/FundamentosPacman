@@ -15,7 +15,7 @@ class GameOverUI : public UI, public Module<GameOverUI>
 {
  public:
 
-  GameOverUI();
+  GameOverUI(const float _windowWidth, const float _windowHeight);
   ~GameOverUI() = default;
 
   /**

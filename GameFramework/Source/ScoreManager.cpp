@@ -4,6 +4,11 @@
 
 #include "ScoreManager.h"
 
+ScoreManager::ScoreManager(const String& path)
+{
+  loadHighScoreFile(path); // Load the high score from the specified file path when the ScoreManager is initialized
+}
+
 void
 ScoreManager::loadHighScoreFile(const String& path)
 {
