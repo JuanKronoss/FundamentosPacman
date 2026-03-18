@@ -74,7 +74,7 @@ protected:
   bool m_isInvincible = false;
   bool m_isForeverInvincible = false; // A flag to indicate whether the player is permanently invincible, which can be set based on the mod information when the Player is created
   sf::Vector2f m_movementDirection = { 0.0f, 0.0f };
-  uint32 m_windowWidth = 800; // Default window width, can be set through the constructor
-  uint32 m_windowHeight = 900; // Default window height, can be set through the constructor
+  uint32 m_windowWidth = 874; // Default window width, can be set through the constructor
+  uint32 m_windowHeight = 980; // Default window height, can be set through the constructor
 
 };

@@ -25,7 +25,8 @@ class Level: public Scene
      static const char wall = '#';
      static const char pacDot = '.';
      static const char powerPellet = 'o';
-     static const char emptySpace = 'e';
+     static const char intersectionWpacDot = 'Y';
+     static const char intersectionEmpty = 'y';
      static const char player = 'P';
      static const char redGhost = 'R';
      static const char pinkGhost = 'I';
@@ -48,8 +49,11 @@ class Level: public Scene
   uint32 m_windowWidth;
   uint32 m_windowHeight;
   float m_iniYPos = 68.0f; // Initial Y position for the top row of the level, adjusted to account for the HUD height and centering on the tile grid
-  float m_tileSize = 38.0f; // Assuming each tile in the level corresponds to a 32x32 pixel area
+  float m_tileSize = 38.0f; // Assuming each tile in the level corresponds to a 38x38 pixel area
   float m_halfTileSize = m_tileSize * 0.5f; // Calculate half the tile size for centering actors on the grid
+  float m_wallColliderSize = m_tileSize - 7.5f; // Size of the box collider for walls, slightly smaller than the tile size to allow for better collision detection and prevent actors from getting stuck on corners
+  float m_characterCollidersize = m_tileSize - 5.0f; // Size of the box collider for characters, slightly smaller than the tile size to allow for better movement and collision detection
+  float m_intersectionColliderSize = 0.001f; // Size of the box collider for intersections, smaller than the tile size to allow for smoother direction changes at intersections
   float m_pacDotSize = 8.0f;
   float m_powerPelletSize = 22.0f;
 };

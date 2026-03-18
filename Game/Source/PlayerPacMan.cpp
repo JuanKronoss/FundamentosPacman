@@ -76,11 +76,12 @@ PlayerPacMan::handleInput(const float deltaTime)
 void
 PlayerPacMan::translate(const float deltaTime)
 {
+
   if (m_isMoving) {
     float moveMagnitude = m_speed * deltaTime;
     move(m_movementDirection.x * moveMagnitude, m_movementDirection.y * moveMagnitude);
     // Wrap the player around the screen edges
-    sf::Vector2f position = getTransform().getPosition();
+    sf::Vector2f position = m_transform.getPosition();
     if (position.x < 0.0f) {
       setPosition(static_cast<float>(m_windowWidth), position.y);
     }
@@ -93,6 +94,7 @@ PlayerPacMan::translate(const float deltaTime)
     else if (position.y > static_cast<float>(m_windowHeight)) {
       setPosition(position.x, 0.0f);
     }
+
   }
 }
 
@@ -146,20 +148,20 @@ PlayerPacMan::onCollisionStay(const WPtr<Actor> other, const sf::FloatRect& inte
     // Prevent the player from moving further into the wall based on the intersection rectangle
     if (intersection.size.x < intersection.size.y) {
       // Collision is more horizontal, adjust the player's position on the x-axis
-      if (getTransform().getPosition().x < pOther->getTransform().getPosition().x) {
-        setPosition(getTransform().getPosition().x - intersection.size.x, getTransform().getPosition().y);
+      if (m_transform.getPosition().x < pOther->getTransform().getPosition().x) {
+        setPosition(m_transform.getPosition().x - intersection.size.x, m_transform.getPosition().y);
       }
       else {
-        setPosition(getTransform().getPosition().x + intersection.size.x, getTransform().getPosition().y);
+        setPosition(m_transform.getPosition().x + intersection.size.x, m_transform.getPosition().y);
       }
     }
     else {
       // Collision is more vertical, adjust the player's position on the y-axis
-      if (getTransform().getPosition().y < pOther->getTransform().getPosition().y) {
-        setPosition(getTransform().getPosition().x, getTransform().getPosition().y - intersection.size.y);
+      if (m_transform.getPosition().y < pOther->getTransform().getPosition().y) {
+        setPosition(m_transform.getPosition().x, m_transform.getPosition().y - intersection.size.y);
       }
       else {
-        setPosition(getTransform().getPosition().x, getTransform().getPosition().y + intersection.size.y);
+        setPosition(m_transform.getPosition().x, m_transform.getPosition().y + intersection.size.y);
       }
     }
 

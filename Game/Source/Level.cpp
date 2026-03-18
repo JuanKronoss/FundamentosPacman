@@ -54,7 +54,7 @@ Level::loadLevelFile(const String & _dataFile)
           pWall->addTag("Wall");
           pWall->setPosition(xPos, yPos);
           pWall->addComponent<SpriteRendererComponent>(resourceMan.getTexture("Wall"));
-          pWall->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_tileSize - 2.0f, m_tileSize - 2.0f));
+          pWall->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_wallColliderSize, m_wallColliderSize));
           pWall->getComponent<SpriteRendererComponent>().lock()->setDrawOrder(-2);
           addActor(pWall);
           break;
@@ -80,54 +80,78 @@ Level::loadLevelFile(const String & _dataFile)
           addActor(pPowerPellet);
           break;
         }
+        case Elements::intersectionWpacDot: {
+          SPtr<PacDot> pPacDot = make_shared<PacDot>();
+          pPacDot->addTag("PacDot");
+          pPacDot->setPosition(xPos, yPos);
+          pPacDot->addComponent<SpriteRendererComponent>(resourceMan.getTexture("PacDot"));
+          pPacDot->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_pacDotSize, m_pacDotSize));
+          pPacDot->getComponent<SpriteRendererComponent>().lock()->setDrawOrder(-1);
+          addActor(pPacDot);
+
+          SPtr<Actor> pIntersection = make_shared<Actor>();
+          pIntersection->addTag("Intersection");
+          pIntersection->setPosition(xPos, yPos);
+          pIntersection->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_intersectionColliderSize, m_intersectionColliderSize));
+          addActor(pIntersection);
+          break;
+        }
+        case Elements::intersectionEmpty: {
+          SPtr<Actor> pIntersection = make_shared<Actor>();
+          pIntersection->addTag("Intersection");
+          pIntersection->setPosition(xPos, yPos);
+          pIntersection->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_intersectionColliderSize, m_intersectionColliderSize));
+          addActor(pIntersection);
+          break;
+        }
         case Elements::player: {
           pPlayer = make_shared<PlayerPacMan>("Player", m_windowWidth, m_windowHeight);
           pPlayer->addTag("Player");
           pPlayer->setPosition(xPos, yPos);
           pPlayer->addComponent<SpriteRendererComponent>(resourceMan.getTexture("PacMan"));
-          pPlayer->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_tileSize - 2.0f, m_tileSize - 2.0f));
+          pPlayer->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_characterCollidersize, m_characterCollidersize));
           addActor(pPlayer);
           break;
         }
         case Elements::redGhost: {
-          SPtr<Ghost> pRedGhost = make_shared<Ghost>(GhostType::Red);
+          SPtr<Ghost> pRedGhost = make_shared<Ghost>(GhostType::Red, m_windowHeight, m_windowHeight, sf::Vector2f(xPos, yPos));
           pRedGhost->addTag("Enemy");
           pRedGhost->addComponent<SpriteRendererComponent>(resourceMan.getTexture("Ghosts"));
           pRedGhost->setProperSprite();
-          pRedGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_tileSize, m_tileSize));
+          pRedGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_characterCollidersize, m_characterCollidersize));
           pRedGhost->setPosition(xPos, yPos);
           addActor(pRedGhost);
           vpGhosts.push_back(pRedGhost);
           break;
         }
         case Elements::pinkGhost: {
-          SPtr<Ghost> pPinkGhost = make_shared<Ghost>(GhostType::Pink);
+          SPtr<Ghost> pPinkGhost = make_shared<Ghost>(GhostType::Pink, m_windowHeight, m_windowHeight, sf::Vector2f(xPos, yPos));
           pPinkGhost->addTag("Enemy");
           pPinkGhost->addComponent<SpriteRendererComponent>(resourceMan.getTexture("Ghosts"));
           pPinkGhost->setProperSprite();
-          pPinkGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_tileSize, m_tileSize));
+          pPinkGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_characterCollidersize, m_characterCollidersize));
           pPinkGhost->setPosition(xPos, yPos);
           addActor(pPinkGhost);
           vpGhosts.push_back(pPinkGhost);
           break;
         }
         case Elements::cyanGhost: {
-          SPtr<Ghost> pBlueGhost = make_shared<Ghost>(GhostType::Blue);
+          SPtr<Ghost> pBlueGhost = make_shared<Ghost>(GhostType::Blue, m_windowHeight, m_windowHeight, sf::Vector2f(xPos, yPos));
           pBlueGhost->addTag("Enemy");
           pBlueGhost->addComponent<SpriteRendererComponent>(resourceMan.getTexture("Ghosts"));
           pBlueGhost->setProperSprite();
-          pBlueGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_tileSize, m_tileSize));
+          pBlueGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_characterCollidersize, m_characterCollidersize));
           pBlueGhost->setPosition(xPos, yPos);
           addActor(pBlueGhost);
           vpGhosts.push_back(pBlueGhost);
           break;
         }
         case Elements::orangeGhost: {
-          SPtr<Ghost> pOrangeGhost = make_shared<Ghost>(GhostType::Orange);
+          SPtr<Ghost> pOrangeGhost = make_shared<Ghost>(GhostType::Orange, m_windowHeight, m_windowHeight, sf::Vector2f(xPos, yPos));
           pOrangeGhost->addTag("Enemy");
           pOrangeGhost->addComponent<SpriteRendererComponent>(resourceMan.getTexture("Ghosts"));
           pOrangeGhost->setProperSprite();
-          pOrangeGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_tileSize, m_tileSize));
+          pOrangeGhost->addComponent<BoxColliderComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(m_characterCollidersize, m_characterCollidersize));
           pOrangeGhost->setPosition(xPos, yPos);
           addActor(pOrangeGhost);
           vpGhosts.push_back(pOrangeGhost);

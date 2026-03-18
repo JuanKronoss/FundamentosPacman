@@ -171,6 +171,7 @@ Game::handleEventsAndInput()
       }
 
     }
+
   }
 }
 
@@ -209,9 +210,7 @@ Game::renderScene(const Scene& scene)
         m_pWindow->draw(debugShape);
       }
     }
-
   }
-
 }
 
 void

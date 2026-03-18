@@ -61,7 +61,4 @@ class FRAMEWORK_EXPORT PlayerPacMan : public PlayerBase
   void
   onCollisionExit(const WPtr<Actor> other) override;
 
-  //float m_newTestFloat = 0.0f;
-
-
 };

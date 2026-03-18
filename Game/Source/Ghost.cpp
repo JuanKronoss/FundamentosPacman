@@ -6,8 +6,8 @@
 #include "SpriteRendererComponent.h"
 #include "BoxColliderComponent.h"
 
-Ghost::Ghost(const GhostType _type)
-  : m_type(_type)
+Ghost::Ghost(const GhostType _type, const uint32 _windowWidth, const uint32 _windowHeight, const sf::Vector2f& _iniPos)
+  : m_type(_type), m_windowWidth(_windowWidth), m_windowHeight(_windowHeight), m_iniPos(_iniPos)
 {
   uint32 imagePosX = static_cast<uint32>(m_type) * m_ghostWidth;
   sf::Vector2i imagePos(imagePosX, 0);
@@ -32,6 +32,8 @@ Ghost::Ghost(const GhostType _type)
   default:
     break;
   }
+  setNewDirection(); // Set an initial random movement direction for the ghost
+  m_movementDirection = m_nextMoveDir; // Initialize the movement direction to the first random direction
 }
 
 void
@@ -71,6 +73,7 @@ Ghost::setProperSprite()
 void
 Ghost::update(const float deltaTime)
 {
+  translate(deltaTime); // Move the ghost based on its current speed and direction
   if (m_isDead) {
     m_deadTimer += deltaTime;
     if (m_deadTimer >= m_deadDuration) {
@@ -86,6 +89,56 @@ Ghost::update(const float deltaTime)
   }
 
   Actor::update(deltaTime); // Call the base class update to update components
+}
+
+void
+Ghost::translate(const float deltaTime)
+{
+  if (m_isDead) {
+    return; // Do not move the ghost if it's currently dead
+  }
+  if (m_willChangeDirection) {
+    m_movementDirection = m_nextMoveDir; // Update the movement direction to the next desired direction
+    m_willChangeDirection = false; // Reset the flag after changing direction
+  }
+
+  float moveMagnitude = m_speed * deltaTime;
+  move(m_movementDirection.x * moveMagnitude, m_movementDirection.y * moveMagnitude);
+  // Wrap the player around the screen edges
+  sf::Vector2f position = m_transform.getPosition();
+  if (position.x < 0.0f) {
+    setPosition(static_cast<float>(m_windowWidth), position.y);
+  }
+  else if (position.x > static_cast<float>(m_windowWidth)) {
+    setPosition(0.0f, position.y);
+  }
+  if (position.y < 0.0f) {
+    setPosition(position.x, static_cast<float>(m_windowHeight));
+  }
+  else if (position.y > static_cast<float>(m_windowHeight)) {
+    setPosition(position.x, 0.0f);
+  }
+
+}
+
+void
+Ghost::setNewDirection()
+{
+  int randomDir = rand() % 4; // Randomly choose a direction: 0 = up, 1 = down, 2 = left, 3 = right
+  switch (randomDir) {
+  case 0:
+    m_nextMoveDir = { 0.0f, -1.0f }; // Move up
+    break;
+  case 1:
+    m_nextMoveDir = { 0.0f, 1.0f }; // Move down
+    break;
+  case 2:
+    m_nextMoveDir = { -1.0f, 0.0f }; // Move left
+    break;
+  case 3:
+    m_nextMoveDir = { 1.0f, 0.0f }; // Move right
+    break;
+  }
 }
 
 void
@@ -107,10 +160,89 @@ Ghost::onCollisionEnter(const WPtr<Actor> other, const sf::FloatRect& intersecti
   if (pOther->hasTag("Player")) {
     if (m_isVulnerable) {
       m_isDead = true; // Mark the ghost as dead when it's eaten by the player
-      setVisible(false); // Hide the ghost when it's eaten by the player
       toggleActiveCollisions(false); // Disable the ghost's collisions when it's eaten by the player
+      setVisible(false); // Hide the ghost when it's eaten by the player
+      setPosition(m_iniPos.x, m_iniPos.y); // Move the ghost back to its initial position when it's eaten by the player
+      // Force immidiate update of the ghost's components to avoid visual glitches and collision issues when the ghost respawns
+      auto wpSpriteRenderer = getComponent<SpriteRendererComponent>();
+      if (!wpSpriteRenderer.expired()) {
+        wpSpriteRenderer.lock()->update(0.0f);
+      }
+      auto wpBoxCollider = getComponent<BoxColliderComponent>();
+      if (!wpBoxCollider.expired()) {
+        wpBoxCollider.lock()->update(0.0f);
+      }
     }
   }
+
+  if (pOther->hasTag("Intersection")) {
+    sf::Vector2f otherPos(pOther->getTransform().getPosition());
+    // Compute a random next movement direction
+    setNewDirection();
+
+    // Move towards the center of the intersection to allow for smoother direction changes at intersections
+    move((otherPos.x - m_transform.getPosition().x) * 0.5f, (otherPos.y - m_transform.getPosition().y) * 0.5f);
+    m_willChangeDirection = true;
+  }
+
+  if (pOther->hasTag("Wall")) {
+    // Prevent the ghost from moving further into the wall based on the intersection rectangle
+    if (intersection.size.x < intersection.size.y) {
+      // Collision is more horizontal, adjust the player's position on the x-axis
+      if (m_transform.getPosition().x < pOther->getTransform().getPosition().x) {
+        setPosition(m_transform.getPosition().x - intersection.size.x, m_transform.getPosition().y);
+      }
+      else {
+        setPosition(m_transform.getPosition().x + intersection.size.x, m_transform.getPosition().y);
+      }
+    }
+    else {
+      // Collision is more vertical, adjust the player's position on the y-axis
+      if (m_transform.getPosition().y < pOther->getTransform().getPosition().y) {
+        setPosition(m_transform.getPosition().x, m_transform.getPosition().y - intersection.size.y);
+      }
+      else {
+        setPosition(m_transform.getPosition().x, m_transform.getPosition().y + intersection.size.y);
+      }
+    }
+
+    // If the ghost collides with a wall, we need to change its direction immediately to prevent it from getting stuck
+    setNewDirection();
+    m_willChangeDirection = true; // Set the flag to change direction in the next update
+  }
+}
+
+void
+Ghost::onCollisionStay(const WPtr<Actor> other, const sf::FloatRect& intersection)
+{
+  SPtr<Actor> pOther = other.lock();
+
+  if (pOther->hasTag("Wall")) {
+    // Prevent the ghost from moving further into the wall based on the intersection rectangle
+    if (intersection.size.x < intersection.size.y) {
+      // Collision is more horizontal, adjust the player's position on the x-axis
+      if (m_transform.getPosition().x < pOther->getTransform().getPosition().x) {
+        setPosition(m_transform.getPosition().x - intersection.size.x, m_transform.getPosition().y);
+      }
+      else {
+        setPosition(m_transform.getPosition().x + intersection.size.x, m_transform.getPosition().y);
+      }
+    }
+    else {
+      // Collision is more vertical, adjust the player's position on the y-axis
+      if (m_transform.getPosition().y < pOther->getTransform().getPosition().y) {
+        setPosition(m_transform.getPosition().x, m_transform.getPosition().y - intersection.size.y);
+      }
+      else {
+        setPosition(m_transform.getPosition().x, m_transform.getPosition().y + intersection.size.y);
+      }
+    }
+    // If the ghost collides with a wall, we need to change its direction immediately to prevent it from getting stuck
+    setNewDirection();
+    m_willChangeDirection = true; // Set the flag to change direction in the next update
+
+  }
+
 }
 
 void

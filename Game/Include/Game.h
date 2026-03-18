@@ -104,7 +104,7 @@ private:
 
   SPtr<sf::RenderWindow> m_pWindow;
 
-  bool m_isDebugMode = true; // Flag to enable/disable debug mode for additional logging or visual aids
+  bool m_isDebugMode = false; // Flag to enable/disable debug mode for additional logging or visual aids
   bool m_mainMenuActive = true; // Flag to indicate whether the main menu is active
   bool m_isPaused = true; // Flag to indicate whether the game is paused
   bool m_isGameOver = false; // Flag to indicate whether the game is over
