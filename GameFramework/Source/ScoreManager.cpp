@@ -20,7 +20,16 @@ ScoreManager::loadHighScoreFile(const String& path)
   
   IFStream file(path, std::ios::binary | std::ios::in);
   if (!file) {
-    return; // If the file doesn't exist, we can just return and keep the default high score of 0
+    // If the file doesn't exist, we can just return and keep the default high score of 0
+    // But first, we need to create a new high score file with the default value of 0.
+    OFStream newFile(path, std::ios::binary | std::ios::out);
+    if (!newFile.is_open()) {
+      throw std::runtime_error("Failed to create high score file: " + path);
+    }
+    uint64 defaultHighScore = 0;
+    newFile.write(reinterpret_cast<const char*>(&defaultHighScore), sizeof(defaultHighScore));
+    newFile.close();
+    return;
   }
   file.read(reinterpret_cast<char*>(&m_highScore), sizeof(m_highScore));
 
